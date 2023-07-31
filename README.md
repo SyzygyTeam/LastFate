@@ -1,8 +1,10 @@
-# Last Fate
+# Last Fate, um cardgame roguelike
 
-Composição da empresa: José Ivan Amorim Jr. e Lucas Francisco Machado.
-Nome da empresa: Syzygy Team.
-Nome do game: Last Fate.
+Sobre o projeto:
+
+- Composição da empresa: José Ivan Amorim Jr. (JIvanAmorim) e Lucas Francisco Machado (splinter888).
+- Nome da empresa: Syzygy Team.
+- Nome do game: Last Fate.
 
 Premissa:
 
@@ -10,19 +12,19 @@ Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual
 
 Referências:
 
-“Cardgames Roguelike”
-Slay the Spire
-Legends of Runeterra (The Path of Champions)
+“Cardgames roguelike”
+- Slay the Spire
+- Legends of Runeterra (The Path of Champions)
 
 “Cardgames”
-Hearthstone
-Magic the Gathering
-Gwent
-Yu-gi-oh!
+- Hearthstone
+- Magic the Gathering
+- Gwent
+- Yu-gi-oh!
 
 “Roguelikes”
-Dead Cells
-Hollow Knight
-Enter the Gungeon
-Soul Knight
-1-Bit Rogue
+- Dead Cells
+- Hollow Knight
+- Enter the Gungeon
+- Soul Knight
+- 1-Bit Rogue
