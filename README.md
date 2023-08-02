@@ -10,9 +10,19 @@
 
 Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual a dupla lutam juntos contra oponentes controlados pelo computador (PvE) em partidas de cardgame e, ao vencerem, ganham recompensas como experiência, cartas novas para seu baralho, ou até poderes especiais para cartas que já possuem. Antes de embarcarem na aventura, cada jogador escolhe seu mercenário, que definirá seu baralho inicial e estilo de jogo, e se jogam no mundo passando por três mapas: Floresta Verdejante, Reindo Afundado, Céus Recaídos.
 
+## Jogo ideal
+
+### Gameplay:
+
+Last Fate seria um cardgame roguelike online cooperativo de 2 a 4 jogadores, contando com milhares de cartas com artes e efeitos visuais exclusivos, feitos em pixel art caprichados. A progressão operaria com upgrades (para cartas e certos aspectos dos Mercenários), sistema de experiência e leveling, e conquistas (achievements) com a realização de certos feitos, combos, escolhas, etc. Os oponentes, controlados pelo computador, iriam aumentando de dificuldade com o decorrer da progressão dos jogadores, sempre mantendo um desafio constante.
+
+### Storytelling:
+
+A história seria contada de forma interativa, no qual as escolhas dos jogadores influenciariam no decorrer e final da jornada. Entre os combates seriam apresentados cutscenes e diálogos, no estilo de visual novel, com a presença dos Mercenários (jogadores) interagindo com as situações e NPCs do universo do jogo.
+
 ## Referências
 
-### Estrutura de jogo
+### Estrutura de jogo:
 
 “Cardgames roguelike”
 - Slay the Spire
@@ -31,7 +41,7 @@ Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual
 - Soul Knight
 - 1-Bit Rogue
 
-### Estética
+### Estética:
 
 “Mapa 1: Floresta Verdejante”
 
@@ -63,7 +73,7 @@ Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual
 “Músicas low-bit”
 - Undertale
 
-### Enredos
+### Enredo:
 
 “Filmes”
 - Nimona
