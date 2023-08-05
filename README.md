@@ -8,13 +8,13 @@
 
 ### Premissa:
 
-Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual a dupla lutam juntos contra oponentes controlados pelo computador (PvE) em partidas de cardgame e, ao vencerem, ganham recompensas como experiência, cartas novas para seu baralho, ou até poderes especiais para cartas que já possuem. Antes de embarcarem na aventura, cada jogador escolhe seu mercenário, que definirá seu baralho inicial e estilo de jogo, e se jogam no mundo passando por três mapas: Floresta Verdejante, Reindo Afundado, Céus Recaídos.
+Last Fate é um desafiador cardgame roguelike cooperativo (2 jogadores), no qual a dupla lutam juntos contra oponentes controlados pelo computador (PvE) em partidas de cardgame e, ao vencerem, ganham recompensas como experiência, cartas novas para seu baralho, ou até poderes especiais para cartas que já possuem. Antes de embarcarem na aventura, cada jogador escolhe seu mercenário, que definirá seu baralho inicial e estilo de jogo, e se jogam no mundo passando por três mapas: Floresta Verdejante, Reindo Afundado e Céus Recaídos.
 
 ## Jogo ideal
 
 ### Gameplay:
 
-Last Fate seria um cardgame roguelike online cooperativo de 2 a 4 jogadores, contando com milhares de cartas com artes e efeitos visuais exclusivos, feitos em pixel art caprichados. A progressão operaria com upgrades (para cartas e certos aspectos dos Mercenários), sistema de experiência e leveling, e conquistas (achievements) com a realização de certos feitos, combos, escolhas, etc. Os oponentes, controlados pelo computador, iriam aumentando de dificuldade com o decorrer da progressão dos jogadores, sempre mantendo um desafio constante.
+Last Fate seria um cardgame roguelike online cooperativo de 2 jogadores, contando com milhares de cartas com artes e efeitos visuais exclusivos, feitos em pixel art caprichados. A progressão operaria com upgrades (para cartas e certos aspectos dos Mercenários), sistema de experiência e leveling, e conquistas (achievements) com a realização de certos feitos, combos, escolhas, etc. Os oponentes, controlados pelo computador, iriam aumentando de dificuldade com o decorrer da progressão dos jogadores, sempre mantendo um desafio constante.
 
 ### Storytelling:
 
@@ -44,6 +44,7 @@ A história seria contada de forma interativa, no qual as escolhas dos jogadores
 ### Estética:
 
 “Mapa 1: Floresta Verdejante”
+- The Legend of Zelda: Ocarina of Time
 
 “Mapa 2: Reino Afundado”
 - Bioshock 1 & 2
@@ -61,11 +62,11 @@ A história seria contada de forma interativa, no qual as escolhas dos jogadores
 - 2001: Uma Odisseia no Espaço
 - Dark Star (Universo de League of Legends)
 
-“Pixel Art”
+“Pixel Art Style”
 - Dead Cells 
 - Undertale
 - Soul Knight
-- Legends of Zelda: a link to the past
+- The Legend of Zelda: A Link to the Past
 - Stardew Valley
 - Hyper Light Drifter
 - Celeste
