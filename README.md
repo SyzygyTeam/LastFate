@@ -27,15 +27,14 @@ A história seria contada de forma interativa, no qual as escolhas dos jogadores
 “Cardgames roguelike”
 - Slay the Spire
 - Legends of Runeterra (The Path of Champions)
+- Inscription
 
 “Cardgames”
 - Hearthstone
 - Magic the Gathering
 - Gwent
-- Yu-gi-oh!
 
 “Roguelikes”
-- Dead Cells
 - Hollow Knight
 - Enter the Gungeon
 - Soul Knight
@@ -49,14 +48,11 @@ A história seria contada de forma interativa, no qual as escolhas dos jogadores
 “Mapa 2: Reino Afundado”
 - Bioshock 1 & 2
 - Subnautica
-- 20.000 Léguas Submarinas
 - Atlantis (Cidade)
 - Abzu
 
 “Mapa 3: Céus Recaídos”
 - Interstellar
-- Star Wars
-- Star Trek
 - Outer Wild
 - No Man’s Sky
 - 2001: Uma Odisseia no Espaço
@@ -76,10 +72,7 @@ A história seria contada de forma interativa, no qual as escolhas dos jogadores
 
 ### Enredo:
 
-“Filmes”
 - Nimona
-
-"Séries"
 - Arcane
 
 
