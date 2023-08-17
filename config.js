@@ -2,8 +2,8 @@
 
 export default {
     type: Phaser.AUTO,
-    width: 800,
-    height: 450,
+    width: 1280,
+    height: 720,
     parent: 'game-container',
     physics: {
       default: 'arcade',
@@ -16,7 +16,7 @@ export default {
       mode: Phaser.Scale.FIT,
       parent: 'game-container',
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: 800,
-      height: 450
+      width: 1280,
+      height: 720
     }
 }
