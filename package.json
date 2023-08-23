@@ -8,5 +8,10 @@
   },
   "scripts": {
     "start": "npm start --prefix servidor"
-  }
+  },
+  "name": "lastfate",
+  "description": "A Roguelike Cardgame",
+  "version": "0.1.0",
+  "author": "SygyzyTeam <joseivan.ajr@gmail.com>",
+  "license": "MIT"
 }
