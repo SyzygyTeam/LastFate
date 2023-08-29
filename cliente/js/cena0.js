@@ -9,14 +9,32 @@ export default class cena0 extends Phaser.Scene {
   }
 
   create () {
-    this.add.image(640, 360, 'ifsc-sj-2014')
-    this.card = this.add.sprite(200, 200, 'card', 0)
+    this.add.sprite(640, 360, 'ifsc-sj-2014')
       .setInteractive()
-      .on('pointerdown', () => { })
+      .on('pointerdown', () => {
+        if (this.scale.isFullscreen) {
+          this.scale.stopFullscreen()
+        } else {
+          this.scale.startFullscreen()
+        }
+      })
+
+    this.card = this.add.sprite(640, 720, 'card', 0)
+      .setScale(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.card.setScale(0.7)
+        this.card.y -= 170
+      })
+      .on('pointerup', () => {
+        this.card.setScale(0.5)
+        this.card.x = 640
+        this.card.y = 720
+      })
     this.input.setDraggable(this.card)
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
-      gameObject.y = dragY
+      gameObject.y = dragY - 170
     })
   }
 
