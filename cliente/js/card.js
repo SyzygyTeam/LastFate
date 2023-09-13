@@ -1,29 +1,40 @@
 export default class card extends Phaser.GameObjects.Container {
-  constructor (scene, centerX, centerY, cost) {
+  constructor (scene, centerX, centerY, cost, attack, health) {
     /* Construção do Container */
     super(scene, centerX, centerY)
 
-    /* Valores de Offsets dos elementos */
-    this.costOffsetX = -180
-    this.costOffsetY = -280
+    this.scene = scene
+
+    /* Definição de valores p/ criação de txt */
+    /* null é de caráter provisório */
+    this.costTxt = null
+    this.attackTxt = null
+    this.healthTxt = null
+
+    this.costTxtShadow = null
+    this.attackTxtShadow = null
+    this.healthTxtShadow = null
+
+    this.arrValues = [cost, attack, health]
+    this.arrTxtElements = [this.costTxt, this.attackTxt, this.healthTxt]
+    this.arrTxtShadowElements = [this.costTxtShadow, this.attackTxtShadow, this.healthTxtShadow]
+
+    /* Valores de posição dos elementos */
+    this.costPos = [-180, -280]
+    this.attackPos = [-180, 245]
+    this.healthPos = [140, 245]
+    this.arrPosElements = [this.costPos, this.attackPos, this.healthPos]
+
+    /* Valor de offset das sombras */
+    this.shadowOffset = 3
 
     /* Base do Container - Card Background */
-    this.bg_img = scene.add.sprite(0, 0, 'card_bg')
-    this.setSize(this.bg_img.width, this.bg_img.height)
-
-    /* Textos */
-    this.cost_txt = scene.add.text(
-      this.costOffsetX,
-      this.costOffsetY,
-      cost,
-      {
-        fontFamily: 'PressStart2P',
-        fontSize: '35px'
-      })
+    this.bgImg = this.scene.add.sprite(0, 0, 'card_bg')
+    this.setSize(this.bgImg.width, this.bgImg.height)
 
     /* Adição dos elementos no Container */
-    this.add(this.bg_img)
-    this.add(this.cost_txt)
+    this.add(this.bgImg)
+    this.generate_txt()
 
     /* Escala Base do Card */
     this.setScale(0.5)
@@ -46,12 +57,35 @@ export default class card extends Phaser.GameObjects.Container {
 
     /* Elementos do card */
     this.cost = cost
-
-    /*
-    this._name = name
+    // this._name = name
     this.attack = attack
     this.health = health
-    this.description = description
-    */
+    // this.description = description
+  }
+
+  generate_txt () {
+    for (let i = 0; i < this.arrValues.length; i++) {
+      this.arrTxtElements[i] = this.scene.add.text(
+        this.arrPosElements[i][0],
+        this.arrPosElements[i][1],
+        this.arrValues[i],
+        {
+          fontFamily: 'PressStart2P',
+          fontSize: '35px',
+          fill: 'white'
+        })
+
+      this.arrTxtShadowElements[i] = this.scene.add.text(
+        this.arrPosElements[i][0] + this.shadowOffset,
+        this.arrPosElements[i][1] + this.shadowOffset,
+        this.arrValues[i],
+        {
+          fontFamily: 'PressStart2P',
+          fontSize: '34px',
+          fill: 'black'
+        })
+      this.add(this.arrTxtShadowElements[i])
+      this.add(this.arrTxtElements[i])
+    }
   }
 }

@@ -15,14 +15,6 @@ export default class cena1 extends Phaser.Scene {
   }
 
   create () {
-    /* Font Load */
-    WebFont.load({
-      custom: {
-        families: ['PressStart2P'],
-        urls: ['../main.css']
-      }
-    })
-
     /* IFSC BG */
     this.add.sprite(640, 360, 'ifsc-sj-2014', 0)
       .setInteractive()
@@ -34,7 +26,9 @@ export default class cena1 extends Phaser.Scene {
         }
       })
 
-    this.card = new card(this, 640, 720, '9')
+    /* Card creation */
+    this.card = new card(this, 640, 720, '4', '3', '5')
+
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
       gameObject.y = dragY - 170

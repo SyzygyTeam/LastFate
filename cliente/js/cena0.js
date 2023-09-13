@@ -24,32 +24,7 @@ export default class cena0 extends Phaser.Scene {
       .setInteractive()
       .on('pointerdown', () => {
         this.scene.start('cena1')
-        /*
-        if (this.scale.isFullscreen) {
-          this.scale.stopFullscreen()
-        } else {
-          this.scale.startFullscreen()
-        }
-        */
       })
-
-    this.card = this.add.sprite(640, 720, 'card', 0)
-      .setScale(0.5)
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.card.setScale(0.7)
-        this.card.y -= 170
-      })
-      .on('pointerup', () => {
-        this.card.setScale(0.5)
-        this.card.x = 640
-        this.card.y = 720
-      })
-    this.input.setDraggable(this.card)
-    this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-      gameObject.x = dragX
-      gameObject.y = dragY - 170
-    })
   }
 
   update () { }
