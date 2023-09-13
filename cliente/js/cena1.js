@@ -1,4 +1,4 @@
-import card from './card.js'
+import Card from './Card.js'
 
 export default class cena1 extends Phaser.Scene {
   constructor () {
@@ -27,7 +27,9 @@ export default class cena1 extends Phaser.Scene {
       })
 
     /* Card creation */
-    this.card = new card(this, 640, 720, '4', '3', '5')
+    this.card = new Card(this, 640, 720, '4', '3', '5')
+    this.card = new Card(this, 640 * 1.5, 720, '4', '3', '5')
+    this.card = new Card(this, 640 / 2, 720, '4', '3', '5')
 
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
