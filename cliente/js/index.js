@@ -1,14 +1,26 @@
 import config from './config.js'
-import cena0 from './cena0.js'
-import cena1 from './cena1.js'
+import mainMenu from './scenes/mainMenu.js'
+import battleMatch from './scenes/battleMatch.js'
 
+/* global Phaser */
 class Game extends Phaser.Game {
   constructor () {
     super(config)
-    this.scene.add('cena0', cena0)
-    this.scene.add('cena1', cena1)
 
-    this.scene.start('cena0')
+    this.socket = io() /* global io */
+    this.socket.on('connect', () => {
+      console.log('Connected to server!')
+      this.socket.emit('enter-room', 1)
+
+      this.socket.on('players', (players) => {
+        console.log(players)
+      })
+    })
+
+    this.scene.add('mainMenu', mainMenu)
+    this.scene.add('battleMatch', battleMatch)
+
+    this.scene.start('mainMenu')
   }
 }
 
