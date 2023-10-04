@@ -152,6 +152,6 @@ export default class Card extends Phaser.GameObjects.Container {
   }
 
   play () {
-    this.destroy()
+    this.setVisible(false)
   }
 }
