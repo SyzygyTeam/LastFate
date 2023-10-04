@@ -12,3 +12,5 @@ ports:
 vscode:
   extensions:
     - dbaeumer.vscode-eslint
+    - oderwat.indent-rainbow
+    - jgclark.vscode-todo-highlight
