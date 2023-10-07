@@ -29,7 +29,8 @@ function displaySettings (scene) {
       })
     })
 
-  // TODO: const fullscreenTxt =
+  // TODO: Proceguir os menus
+  // const fullscreenTxt =
   // const fullscreenCheck =
 
   const settingsElements = [darkerBg, settingsBg, closeSettings]
