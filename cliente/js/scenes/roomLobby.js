@@ -68,7 +68,7 @@ export default class roomLobby extends Phaser.Scene {
     if (this.displayText.length < 4) { return }
 
     const codeRoom = Number(this.typedRoom.join(''))
-    console.log(this.game.socket.emit('enter-room', codeRoom))
+    this.game.socket.emit('enter-room', codeRoom)
 
     // TODO: Evitar o avanço de cena caso a sala teclada ñ exista
     this.scene.start('mainMenu')
@@ -79,12 +79,12 @@ export default class roomLobby extends Phaser.Scene {
 
   /* Remove o último char teclado */
   removeChar () {
-    /* Checa se está vazio */
+    /* Checa se o campo está vazio */
     if (this.displayText.length === 0) { return }
 
-    this.displayText[-1].destroy()
-    this.displayText.pop()
     this.typedRoom.pop()
+    const removedChar = this.displayText.pop()
+    removedChar.destroy()
   }
 
   update () { }
