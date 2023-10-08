@@ -4,12 +4,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Servidor",
+      "name": "Server",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "cwd": "${workspaceFolder}/servidor",
-      "program": "servidor.js"
+      "cwd": "${workspaceFolder}/server",
+      "program": "server.js"
     }
   ]
 }

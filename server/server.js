@@ -4,7 +4,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const PORT = process.env.PORT || 3000
 
-/* Ao conectar ao servidor */
+/* Ao conectar ao server */
 io.on('connection', (socket) => {
   console.log('User %s has connected.', socket.id)
 

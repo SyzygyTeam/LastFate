@@ -62,7 +62,7 @@ export default class roomLobby extends Phaser.Scene {
     this.typedRoom.push(value)
   }
 
-  /* Confirma o valor teclado e emite 'enter-room' ao servidor */
+  /* Confirma o valor teclado e emite 'enter-room' ao server */
   confirm () {
     /* Checa se está c/ a qntdd de char está correto */
     if (this.displayText.length < 4) { return }
