@@ -33,6 +33,8 @@ export default class mainMenu extends Phaser.Scene {
       .on('pointerdown', () => {
         this.scene.start('battleMatch')
       })
+
+    this.add.text(20, 20, `Sua sala: ${this.game.roomNo}`)
     settings.displaySettings(this)
   }
 

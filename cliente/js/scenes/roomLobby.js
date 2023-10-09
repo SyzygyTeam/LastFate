@@ -7,9 +7,36 @@ export default class roomLobby extends Phaser.Scene {
   preload () { }
 
   create () {
+    /* Mensagens do server */
+    this.game.socket.on('enter-room-ok', (room) => {
+      this.game.roomNo = room.no
+      this.scene.start('mainMenu')
+    })
+
+    this.game.socket.on('enter-room-404', (room) => {
+      this.errorMessage = this.add.text(300, 300, `Sala ${room.no} não existe`)
+      this.onError = true
+      for (let i = 0; i < 4; i++) {
+        this.removeChar(i)
+      }
+    })
+
+    this.game.socket.on('enter-room-full', (room) => {
+      this.errorMessage = this.add.text(300, 300, `Sala ${room.no} está cheia`)
+      this.onError = true
+      for (let i = 0; i < 4; i++) {
+        this.removeChar(i)
+      }
+    })
+
+    this.game.socket.on('players', (players) => {
+      console.log(players)
+    })
+
     /* Exibição e valores teclados pelo Player */
     this.displayText = []
     this.typedRoom = []
+    this.onError = false
 
     /* Criação do Teclado Virtual */
     this.createKeyboard()
@@ -34,10 +61,6 @@ export default class roomLobby extends Phaser.Scene {
       .setInteractive()
       .on('pointerdown', () => {
         this.game.socket.emit('create-room')
-        this.scene.start('mainMenu')
-        this.game.socket.on('players', (players) => {
-          console.log(players)
-        })
       })
   }
 
@@ -67,14 +90,13 @@ export default class roomLobby extends Phaser.Scene {
     /* Checa se está c/ a qntdd de char está correto */
     if (this.displayText.length < 4) { return }
 
+    if (this.onError === true) {
+      this.errorMessage.destroy()
+      this.onError = false
+    }
+
     const codeRoom = Number(this.typedRoom.join(''))
     this.game.socket.emit('enter-room', codeRoom)
-
-    // TODO: Evitar o avanço de cena caso a sala teclada ñ exista
-    this.scene.start('mainMenu')
-    this.game.socket.on('players', (players) => {
-      console.log(players)
-    })
   }
 
   /* Remove o último char teclado */

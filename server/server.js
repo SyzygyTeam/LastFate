@@ -4,11 +4,11 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const PORT = process.env.PORT || 3000
 
-/* Ao conectar ao server */
+/* Ao tentar conectar ao server */
 io.on('connection', (socket) => {
   console.log('User %s has connected.', socket.id)
 
-  /* Ao criar uma sala aleatória */
+  /* Ao tentar criar uma sala aleatória */
   socket.on('create-room', () => {
     const room = rngRoom()
     socket.join(room)
@@ -19,26 +19,35 @@ io.on('connection', (socket) => {
       p2: undefined
     }
 
+    io.to(socket.id).emit('enter-room-ok', { no: room })
     io.to(room).emit('players', players)
   })
 
-  /* Ao entrar numa sala existente */
+  /* Ao tentar entrar numa sala existente */
   socket.on('enter-room', (room) => {
     /* Checa a existência da sala e se está cheia */
-    if (!io.sockets.adapter.rooms.has(room) ||
-      io.sockets.adapter.rooms.get(room).size === 2) { return false }
+    if (!io.sockets.adapter.rooms.has(room)) {
+      io.to(socket.id).emit('enter-room-404', { no: room })
+    } else if (io.sockets.adapter.rooms.get(room).size === 2) {
+      io.to(socket.id).emit('enter-room-full', { no: room })
+    } else {
+      socket.join(room)
+      console.log('User %s has entered the room %s.', socket.id, room)
 
-    socket.join(room)
-    console.log('User %s has entered the room %s.', socket.id, room)
+      const [p1] = io.sockets.adapter.rooms.get(room)
+      const players = {
+        p1,
+        p2: socket.id
+      }
 
-    const [p1] = io.sockets.adapter.rooms.get(room)
-    const players = {
-      p1,
-      p2: socket.id
+      console.log('Room filled. Match starting!', room)
+      io.to(socket.id).emit('enter-room-ok', { no: room })
+      io.to(room).emit('players', players)
     }
+  })
 
-    console.log('Room filled. Match starting!', room)
-    io.to(room).emit('players', players)
+  socket.on('get-room', () => {
+    io.to(socket.id).emit('response-room', io.sockets.adapter.rooms)
   })
 
   socket.on('publish-state', (room, state) => {
