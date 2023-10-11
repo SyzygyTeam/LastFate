@@ -20,6 +20,21 @@ export default class mainMenu extends Phaser.Scene {
   }
 
   create () {
+    /* Mensagens */
+    this.game.socket.on('room-status-reply', (playerStatus) => {
+      this.playerStatus = playerStatus
+      /* Checa se já há texto na tela */
+      if (this.statusMessage) {
+        this.statusRoomNo.destroy()
+        this.statusMessage.destroy()
+      }
+      /* Adiciona o status na tela */
+      this.statusRoomNo = this.add.text(20, 20, `Sua sala: ${this.game.roomNo}`)
+      this.statusMessage = this.add.text(20, 40, `Jogadores: ${this.playerStatus} / 2`)
+    })
+
+    this.game.socket.emit('room-status-request', this.game.roomNo)
+
     /* global WebFont */
     WebFont.load({
       custom: {
@@ -34,7 +49,6 @@ export default class mainMenu extends Phaser.Scene {
         this.scene.start('battleMatch')
       })
 
-    this.add.text(20, 20, `Sua sala: ${this.game.roomNo}`)
     settings.displaySettings(this)
   }
 

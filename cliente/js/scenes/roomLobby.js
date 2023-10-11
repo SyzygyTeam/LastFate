@@ -40,6 +40,7 @@ export default class roomLobby extends Phaser.Scene {
 
     /* Criação do Teclado Virtual */
     this.createKeyboard()
+
     this.add.text(100, 200, 0)
       .setInteractive()
       .on('pointerdown', () => {
@@ -105,8 +106,7 @@ export default class roomLobby extends Phaser.Scene {
     if (this.displayText.length === 0) { return }
 
     this.typedRoom.pop()
-    const removedChar = this.displayText.pop()
-    removedChar.destroy()
+    this.displayText.pop().destroy()
   }
 
   update () { }

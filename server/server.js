@@ -6,13 +6,13 @@ const PORT = process.env.PORT || 3000
 
 /* Ao tentar conectar ao server */
 io.on('connection', (socket) => {
-  console.log('User %s has connected.', socket.id)
+  console.log(`User ${socket.id} has connected.`)
 
   /* Ao tentar criar uma sala aleatória */
   socket.on('create-room', () => {
     const room = rngRoom()
     socket.join(room)
-    console.log('User %s has created the room %s.', socket.id, room)
+    console.log(`User ${socket.id} has created the room ${room}.`)
 
     const players = {
       p1: socket.id,
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
       io.to(socket.id).emit('enter-room-full', { no: room })
     } else {
       socket.join(room)
-      console.log('User %s has entered the room %s.', socket.id, room)
+      console.log(`User ${socket.id} has entered the room ${room}.`)
 
       const [p1] = io.sockets.adapter.rooms.get(room)
       const players = {
@@ -40,25 +40,26 @@ io.on('connection', (socket) => {
         p2: socket.id
       }
 
-      console.log('Room filled. Match starting!', room)
+      console.log(`Room ${room} filled. Match starting!`)
       io.to(socket.id).emit('enter-room-ok', { no: room })
       io.to(room).emit('players', players)
     }
   })
 
-  socket.on('get-room', () => {
-    io.to(socket.id).emit('response-room', io.sockets.adapter.rooms)
+  /* Ao tentar obter status da qntdd de players na sala */
+  socket.on('room-status-request', (room) => {
+    const playerStatus = io.sockets.adapter.rooms.get(room).size
+    io.to(room).emit('room-status-reply', playerStatus)
+  })
+
+  /* Ao tentar atualizar o deck do player */
+  socket.on('publish-deck', (room, deck) => {
+    socket.broadcast.to(room).emit('notify-deck', deck)
   })
 
   socket.on('publish-state', (room, state) => {
     socket.broadcast.to(room).emit('notification-state', state)
   })
-
-  /* TODO:
-  socket.on('artefatos-publicar', (room, artefatos) => {
-    socket.broadcast.to(room).emit('artefatos-notificar', artefatos)
-  })
-  */
 
   socket.on('offer', (room, description) => {
     socket.broadcast.to(room).emit('offer', description)
@@ -72,8 +73,19 @@ io.on('connection', (socket) => {
     socket.broadcast.to(room).emit('answer', description)
   })
 
+  /* Ao tentar desconectar */
+  socket.on('disconnecting', (reason) => {
+    for (const room of socket.rooms) {
+      if (room !== socket.id) {
+        /* Atualiza a qntdd de player na Sala */
+        socket.to(room).emit('room-status-reply', 1)
+      }
+    }
+  })
+
+  /* Ao desconectar */
   socket.on('disconnect', () => {
-    console.log('User %s has disconnected.', socket.id)
+    console.log(`User ${socket.id} has disconnected.`)
   })
 })
 
