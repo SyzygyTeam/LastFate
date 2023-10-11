@@ -1,9 +1,10 @@
-/* Configuração do objeto Game */
+/* Configurações do objeto Game do Phaser */
 
+/* global Phaser */
 export default {
   type: Phaser.AUTO,
-  width: 1280,
-  height: 720,
+  width: 800,
+  height: 450,
   parent: 'game-container',
   physics: {
     default: 'arcade',
@@ -16,7 +17,7 @@ export default {
     mode: Phaser.Scale.FIT,
     parent: 'game-container',
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1280,
-    height: 720
+    width: 800,
+    height: 450
   }
 }

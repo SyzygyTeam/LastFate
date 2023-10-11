@@ -1,9 +1,8 @@
 tasks:
   - name: eslint
     init: npm install eslint --save-dev
-  - name: servidor
-    init: npm install --prefix servidor
-    command: npm start --prefix servidor
+  - name: server
+    init: npm install --prefix server
 
 ports:
   - port: 3000
@@ -12,3 +11,5 @@ ports:
 vscode:
   extensions:
     - dbaeumer.vscode-eslint
+    - oderwat.indent-rainbow
+    - jgclark.vscode-todo-highlight
