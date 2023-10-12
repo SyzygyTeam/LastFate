@@ -100,5 +100,5 @@ function rngRoom () {
   return rng
 }
 
-app.use(express.static('../cliente/'))
+app.use(express.static('../client/'))
 server.listen(PORT, () => console.log(`Server started at ${PORT} port!\n`))
