@@ -50,7 +50,15 @@ export default class mainMenu extends Phaser.Scene {
       })
 
     settings.displaySettings(this)
+
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        console.log(stream)
+        this.game.midias = stream
+      })
+      .catch((error) => console.log(error))
   }
 
-  update () { }
+  update (time, delta) { }
 }

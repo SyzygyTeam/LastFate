@@ -14,6 +14,16 @@ class Game extends Phaser.Game {
       console.log('Connected to server!')
     })
 
+    this.ice_servers = {
+      iceServers: [
+        {
+          urls: 'stun:stun.l.google.com:19302'
+        }
+      ]
+    }
+    // eslint-disable-next-line quotes
+    this.audio = document.querySelector("audio")
+
     /* Todas as cenas */
     this.scene.add('roomLobby', roomLobby)
     this.scene.add('mainMenu', mainMenu)

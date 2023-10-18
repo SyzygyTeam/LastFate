@@ -109,5 +109,5 @@ export default class roomLobby extends Phaser.Scene {
     this.displayText.pop().destroy()
   }
 
-  update () { }
+  update (time, delta) { }
 }
