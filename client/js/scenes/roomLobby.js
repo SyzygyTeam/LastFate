@@ -61,6 +61,7 @@ export default class roomLobby extends Phaser.Scene {
     this.createRoom = this.add.text(50, 300, 'Criar Sala')
       .setInteractive()
       .on('pointerdown', () => {
+        this.game.player = 'p1'
         this.game.socket.emit('create-room')
       })
   }
@@ -95,6 +96,8 @@ export default class roomLobby extends Phaser.Scene {
       this.errorMessage.destroy()
       this.onError = false
     }
+
+    this.game.player = 'p2'
 
     const codeRoom = Number(this.typedRoom.join(''))
     this.game.socket.emit('enter-room', codeRoom)
