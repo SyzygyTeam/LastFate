@@ -10,8 +10,8 @@ io.on('connection', (socket) => {
 
   /* Ao tentar criar uma sala aleatória */
   socket.on('create-room', () => {
-    const room = rngRoom()
-    socket.join(room)
+    const room = rngRoom() // Gera um código de sala aleatório
+    socket.join(room) // Entra no código gerado
     console.log(`User ${socket.id} has created the room ${room}.`)
 
     const players = {
@@ -61,6 +61,7 @@ io.on('connection', (socket) => {
     socket.to(room).emit('notification-state', state)
   })
 
+  /* VOIP */
   socket.on('offer', (room, description) => {
     socket.to(room).emit('offer', description)
   })

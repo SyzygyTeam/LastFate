@@ -34,7 +34,7 @@ export default class mainMenu extends Phaser.Scene {
     /* Mensagens */
     this.game.socket.on('room-status-reply', (playerStatus) => {
       this.playerStatus = playerStatus
-      /* Checa se já há texto na tela */
+      /* Checa se já há texto de status na tela */
       if (this.statusMessage) {
         this.statusRoomNo.destroy()
         this.statusMessage.destroy()
