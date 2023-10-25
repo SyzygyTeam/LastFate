@@ -9,20 +9,34 @@ class Game extends Phaser.Game {
     super(config)
 
     /* Conexão do User c/ o Socket */
-    this.socket = io() /* global io */
+    /* global io */
+    this.socket = io()
     this.socket.on('connect', () => {
       console.log('Connected to server!')
     })
 
-    this.ice_servers = {
-      iceServers: [
+    let iceServers
+    if (window.location.host === 'feira-de-jogos.sj.ifsc.edu.br') {
+      iceServers = [
+        {
+          urls: 'stun:feira-de-jogos.sj.ifsc.edu.br'
+        },
+        {
+          urls: 'turns:feira-de-jogos.sj.ifsc.edu.br',
+          username: 'adcipt',
+          credential: 'adcipt20232'
+        }
+      ]
+    } else {
+      iceServers = [
         {
           urls: 'stun:stun.l.google.com:19302'
         }
       ]
     }
-    // eslint-disable-next-line quotes
-    this.audio = document.querySelector("audio")
+    this.iceServers = { iceServers }
+
+    this.audio = document.querySelector('audio')
 
     /* Todas as cenas */
     this.scene.add('roomLobby', roomLobby)
