@@ -10,8 +10,8 @@ io.on('connection', (socket) => {
 
   /* Ao tentar criar uma sala aleatória */
   socket.on('create-room', () => {
-    const room = rngRoom()
-    socket.join(room)
+    const room = rngRoom() // Gera um código de sala aleatório
+    socket.join(room) // Entra no código gerado
     console.log(`User ${socket.id} has created the room ${room}.`)
 
     const players = {
@@ -54,23 +54,24 @@ io.on('connection', (socket) => {
 
   /* Ao tentar atualizar o deck do player */
   socket.on('publish-deck', (room, deck) => {
-    socket.broadcast.to(room).emit('notify-deck', deck)
+    socket.to(room).emit('notify-deck', deck)
   })
 
   socket.on('publish-state', (room, state) => {
-    socket.broadcast.to(room).emit('notification-state', state)
+    socket.to(room).emit('notification-state', state)
   })
 
+  /* VOIP */
   socket.on('offer', (room, description) => {
-    socket.broadcast.to(room).emit('offer', description)
+    socket.to(room).emit('offer', description)
   })
 
   socket.on('candidate', (room, candidate) => {
-    socket.broadcast.to(room).emit('candidate', candidate)
+    socket.to(room).emit('candidate', candidate)
   })
 
   socket.on('answer', (room, description) => {
-    socket.broadcast.to(room).emit('answer', description)
+    socket.to(room).emit('answer', description)
   })
 
   /* Ao tentar desconectar */

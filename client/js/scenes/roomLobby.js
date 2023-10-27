@@ -8,11 +8,14 @@ export default class roomLobby extends Phaser.Scene {
 
   create () {
     /* Mensagens do server */
+
+    /* Entrou normalmente numa sala */
     this.game.socket.on('enter-room-ok', (room) => {
       this.game.roomNo = room.no
       this.scene.start('mainMenu')
     })
 
+    /* Sala inserida não existe */
     this.game.socket.on('enter-room-404', (room) => {
       this.errorMessage = this.add.text(300, 300, `Sala ${room.no} não existe`)
       this.onError = true
@@ -21,6 +24,7 @@ export default class roomLobby extends Phaser.Scene {
       }
     })
 
+    /* Sala inserida já possui dois jogadores (Cheio) */
     this.game.socket.on('enter-room-full', (room) => {
       this.errorMessage = this.add.text(300, 300, `Sala ${room.no} está cheia`)
       this.onError = true
@@ -61,6 +65,7 @@ export default class roomLobby extends Phaser.Scene {
     this.createRoom = this.add.text(50, 300, 'Criar Sala')
       .setInteractive()
       .on('pointerdown', () => {
+        this.game.player = 'p1'
         this.game.socket.emit('create-room')
       })
   }
@@ -76,7 +81,7 @@ export default class roomLobby extends Phaser.Scene {
     }
   }
 
-  /* Func de apertar o botão */
+  /* Apertar algum botão numeral */
   press (value) {
     /* Checa se irá exceder o limite de char das salas (4) */
     if (this.displayText.length === 4) { return }
@@ -86,7 +91,7 @@ export default class roomLobby extends Phaser.Scene {
     this.typedRoom.push(value)
   }
 
-  /* Confirma o valor teclado e emite 'enter-room' ao server */
+  /* Confirmar o valor teclado e emite 'enter-room' ao server */
   confirm () {
     /* Checa se está c/ a qntdd de char está correto */
     if (this.displayText.length < 4) { return }
@@ -96,11 +101,13 @@ export default class roomLobby extends Phaser.Scene {
       this.onError = false
     }
 
+    this.game.player = 'p2'
+
     const codeRoom = Number(this.typedRoom.join(''))
     this.game.socket.emit('enter-room', codeRoom)
   }
 
-  /* Remove o último char teclado */
+  /* Remove o último caractere teclado */
   removeChar () {
     /* Checa se o campo está vazio */
     if (this.displayText.length === 0) { return }
@@ -109,5 +116,5 @@ export default class roomLobby extends Phaser.Scene {
     this.displayText.pop().destroy()
   }
 
-  update () { }
+  update (time, delta) { }
 }

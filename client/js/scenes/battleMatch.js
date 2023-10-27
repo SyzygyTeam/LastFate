@@ -19,6 +19,92 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   create () {
+    /* VOIP P2 */
+    if (this.game.player === 'p2') {
+      navigator.mediaDevices
+        .getUserMedia({ video: false, audio: true })
+        .then((stream) => {
+          console.log(stream)
+
+          this.game.localConnection = new RTCPeerConnection(
+            this.game.ice_servers
+          )
+
+          stream
+            .getTracks()
+            .forEach((track) =>
+              this.game.localConnection.addTrack(track, stream)
+            )
+
+          this.game.localConnection.onicecandidate = ({ candidate }) => {
+            candidate &&
+              this.game.socket.emit('candidate', this.game.roomNo, candidate)
+          }
+
+          this.game.localConnection.ontrack = ({ streams: [stream] }) => {
+            this.game.audio.srcObject = stream
+          }
+
+          this.game.localConnection
+            .createOffer()
+            .then((offer) =>
+              this.game.localConnection.setLocalDescription(offer)
+            )
+            .then(() => {
+              this.game.socket.emit(
+                'offer',
+                this.game.roomNo,
+                this.game.localConnection.localDescription
+              )
+            })
+
+          this.game.midias = stream
+        })
+        .catch((error) => console.log(error))
+    }
+
+    this.game.socket.on('offer', (description) => {
+      this.game.remoteConnection = new RTCPeerConnection(this.ice_servers)
+
+      this.game.midias
+        .getTracks()
+        .forEach((track) =>
+          this.game.remoteConnection.addTrack(track, this.game.midias)
+        )
+
+      this.game.remoteConnection.onicecandidate = ({ candidate }) => {
+        candidate &&
+          this.game.socket.emit('candidate', this.game.roomNo, candidate)
+      }
+
+      this.game.remoteConnection.ontrack = ({ streams: [stream] }) => {
+        this.game.audio.srcObject = stream
+      }
+
+      this.game.remoteConnection
+        .setRemoteDescription(description)
+        .then(() => this.game.remoteConnection.createAnswer())
+        .then((answer) =>
+          this.game.remoteConnection.setLocalDescription(answer)
+        )
+        .then(() => {
+          this.game.socket.emit(
+            'answer',
+            this.game.roomNo,
+            this.game.remoteConnection.localDescription
+          )
+        })
+    })
+
+    this.game.socket.on('answer', (description) => {
+      this.game.localConnection.setRemoteDescription(description)
+    })
+
+    this.game.socket.on('candidate', (candidate) => {
+      const conn = this.game.localConnection || this.game.remoteConnection
+      conn.addIceCandidate(new RTCIceCandidate(candidate))
+    })
+
     this.add.sprite(400, 225, 'forest')
       .setInteractive()
       .on('pointerdown', () => {
@@ -47,6 +133,6 @@ export default class battleMatch extends Phaser.Scene {
     settings.displaySettings(this)
   }
 
-  update () {
+  update (time, delta) {
   }
 }

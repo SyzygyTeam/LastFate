@@ -10,6 +10,17 @@ export default class mainMenu extends Phaser.Scene {
   }
 
   preload () {
+    /* VOIP P1 */
+    if (this.game.player === 'p1') {
+      navigator.mediaDevices
+        .getUserMedia({ video: false, audio: true })
+        .then((stream) => {
+          console.log(stream)
+          this.game.midias = stream
+        })
+        .catch((error) => console.log(error))
+    }
+
     this.load.script(
       'webfont',
       'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'
@@ -23,7 +34,7 @@ export default class mainMenu extends Phaser.Scene {
     /* Mensagens */
     this.game.socket.on('room-status-reply', (playerStatus) => {
       this.playerStatus = playerStatus
-      /* Checa se já há texto na tela */
+      /* Checa se já há texto de status na tela */
       if (this.statusMessage) {
         this.statusRoomNo.destroy()
         this.statusMessage.destroy()
@@ -52,5 +63,5 @@ export default class mainMenu extends Phaser.Scene {
     settings.displaySettings(this)
   }
 
-  update () { }
+  update (time, delta) { }
 }
