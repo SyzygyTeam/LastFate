@@ -8,6 +8,10 @@ class Game extends Phaser.Game {
   constructor () {
     super(config)
 
+    /* Funções de crédito */
+    this.id = 1 // No do jogo (indentificação)
+    this.value = 100 // 'Valor' padrão do crédito
+
     /* Conexão do User c/ o Socket */
     /* global io */
     this.socket = io()
