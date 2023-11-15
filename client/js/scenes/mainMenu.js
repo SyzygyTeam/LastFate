@@ -27,7 +27,7 @@ export default class mainMenu extends Phaser.Scene {
     )
     this.load.image('forest', '../../assets/battleBg/forest.png')
 
-    settings.preloadSettings(this)
+    settings.preloadElements(this)
   }
 
   create () {

@@ -2,6 +2,7 @@ import config from './config.js'
 import roomLobby from './scenes/roomLobby.js'
 import mainMenu from './scenes/mainMenu.js'
 import battleMatch from './scenes/battleMatch.js'
+import claimCredits from './scenes/claimCredits.js'
 
 /* global Phaser */
 class Game extends Phaser.Game {
@@ -9,7 +10,7 @@ class Game extends Phaser.Game {
     super(config)
 
     /* Funções de crédito */
-    this.id = 1 // No do jogo (indentificação)
+    this.id = 1 // Nº do jogo (indentificação)
     this.value = 100 // 'Valor' padrão do crédito
 
     /* Conexão do User c/ o Socket */
@@ -46,6 +47,7 @@ class Game extends Phaser.Game {
     this.scene.add('roomLobby', roomLobby)
     this.scene.add('mainMenu', mainMenu)
     this.scene.add('battleMatch', battleMatch)
+    this.scene.add('claimCredits', claimCredits)
 
     /* Cena de início */
     this.scene.start('roomLobby')

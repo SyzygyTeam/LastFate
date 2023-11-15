@@ -1,10 +1,16 @@
+import * as settings from '../settingsMenu.js'
+
+/* Cena de seleção de salas */
+
 /* global Phaser */
 export default class roomLobby extends Phaser.Scene {
   constructor () {
     super('roomLobby')
   }
 
-  preload () { }
+  preload () {
+    settings.preloadElements(this)
+  }
 
   create () {
     /* Mensagens do server */
@@ -68,6 +74,8 @@ export default class roomLobby extends Phaser.Scene {
         this.game.player = 'p1'
         this.game.socket.emit('create-room')
       })
+
+    settings.displaySettings(this)
   }
 
   /* Cria o teclado 1 ~ 9 */

@@ -15,7 +15,7 @@ export default class battleMatch extends Phaser.Scene {
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
     this.load.image('testSprite', '../../assets/cardsSprites/testSprite.png')
 
-    settings.preloadSettings(this)
+    settings.preloadElements(this)
   }
 
   create () {
@@ -105,15 +105,8 @@ export default class battleMatch extends Phaser.Scene {
       conn.addIceCandidate(new RTCIceCandidate(candidate))
     })
 
+    /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
-      .setInteractive()
-      .on('pointerdown', () => {
-        if (this.scale.isFullscreen) {
-          this.scale.stopFullscreen()
-        } else {
-          this.scale.startFullscreen()
-        }
-      })
 
     /* Criação dos Cards */
     this.card1 = new Card(this, 400, 440, cardList.giganteLorde)

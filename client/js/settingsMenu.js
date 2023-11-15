@@ -1,10 +1,10 @@
-export { preloadSettings, displaySettings }
+export { preloadElements, displaySettings }
 
 /* Responsável pelos menus de configurações p/ o usuário */
 /* Serve para ser acessado em todas as cenas (import) */
 
 /* Somente p/ o preload */
-function preloadSettings (scene) {
+function preloadElements (scene) {
   scene.load.image('gear', '../assets/settings/gear.png')
   scene.load.image('close', '../assets/settings/closeIcon.png')
   scene.load.image('settingsBg', '../assets/settings/bg.png')
@@ -17,6 +17,14 @@ function displaySettings (scene) {
 
   const settingsBg = scene.add.sprite(400, 225, 'settingsBg')
     .setVisible(false)
+    .setInteractive()
+    .on('pointerdown', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
+    })
 
   const closeSettings = scene.add.sprite(535, 85, 'close')
     .setVisible(false)
