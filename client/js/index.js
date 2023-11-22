@@ -12,7 +12,7 @@ class Game extends Phaser.Game {
     super(config)
 
     /* Funções de crédito */
-    this.id = 1 // Nº do jogo (indentificação)
+    this.id = 5 // Nº do jogo (indentificação)
     this.value = 100 // 'Valor' padrão do crédito
 
     /* Conexão do User c/ o Socket */
