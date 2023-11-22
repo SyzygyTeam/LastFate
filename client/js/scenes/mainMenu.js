@@ -28,7 +28,7 @@ export default class mainMenu extends Phaser.Scene {
     this.mainST = this.sound.add('mainST')
     this.mainST.loop = true
     this.mainST.play()
-      .setVolume(0.5)
+    this.mainST.setVolume(0.5)
 
     this.sky = this.add.sprite(400, 225, 'sky')
     this.cloud = this.add.sprite(900, 50, 'cloud')
