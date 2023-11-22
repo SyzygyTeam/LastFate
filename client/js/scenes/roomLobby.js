@@ -18,7 +18,7 @@ export default class roomLobby extends Phaser.Scene {
     /* Entrou normalmente numa sala */
     this.game.socket.on('enter-room-ok', (room) => {
       this.game.roomNo = room.no
-      this.scene.start('mainMenu')
+      this.scene.start('playersLobby')
     })
 
     /* Sala inserida não existe */

@@ -139,7 +139,7 @@ export default class claimCredits extends Phaser.Scene {
               if (this.tempo === 0) {
                 this.relogio.destroy()
                 this.scene.stop('claimCredits')
-                this.scene.start('mainMenu')
+                this.scene.start('playersLobby')
               }
             },
             callbackScope: this,
