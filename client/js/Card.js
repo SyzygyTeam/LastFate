@@ -11,7 +11,6 @@ export default class Card extends Phaser.GameObjects.Container {
     this.scene = scene
 
     /* Definição de valores p/ criação de txt */
-    /* null é de caráter provisório */
     this.costTxt = null
     this.attackTxt = null
     this.healthTxt = null
@@ -26,8 +25,9 @@ export default class Card extends Phaser.GameObjects.Container {
     this.arrPosElements = [this.costPos, this.attackPos, this.healthPos]
 
     /* Sprites */
+    this.sprite = cardInfo.path
     this.bgImg = this.scene.add.sprite(0, 0, 'cardBg')
-    this.spriteImg = this.scene.add.sprite(0, -50, cardInfo.path)
+    this.spriteImg = this.scene.add.sprite(0, -50, this.sprite)
       .setScale(2)
     this.setSize(this.bgImg.width, this.bgImg.height)
 
@@ -123,6 +123,11 @@ export default class Card extends Phaser.GameObjects.Container {
     this.attack = cardInfo.attack
     this.health = cardInfo.health
     this.description = cardInfo.description
+
+    this.sendInfo = {
+      sprite: this.sprite,
+      name: this.nameTxt
+    }
   }
 
   generateTxtValues () {
@@ -152,6 +157,6 @@ export default class Card extends Phaser.GameObjects.Container {
   }
 
   play () {
-    this.setVisible(false)
+    this.scene.playCard(this.sendInfo, this)
   }
 }

@@ -113,6 +113,11 @@ export default class battleMatch extends Phaser.Scene {
     this.card2 = new Card(this, 400 * 1.5, 440, cardList.pequenoMago)
     this.card3 = new Card(this, 400 / 2, 440, cardList.bonecoDeTeste)
 
+    this.game.socket.on('summon-unit', (card) => {
+      console.log(card)
+      this.add.sprite(card.x, card.y, card.sprite)
+    })
+
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
       gameObject.y = dragY - 70
@@ -124,6 +129,11 @@ export default class battleMatch extends Phaser.Scene {
     })
 
     settings.displaySettings(this)
+  }
+
+  playCard (cardInfo, card) {
+    this.game.socket.emit('play-card', this.game.roomNo, cardInfo)
+    card.setVisible(false)
   }
 
   update (time, delta) {

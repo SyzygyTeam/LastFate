@@ -4,6 +4,22 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const PORT = process.env.PORT || 3000
 
+const rooms = {
+  state: 0,
+  size: 0,
+  npc: {
+    name: ''
+  },
+  allyField: {
+    size: 0,
+    units: []
+  },
+  enemyField: {
+    size: 0,
+    units: []
+  }
+}
+
 /* Ao tentar conectar ao server */
 io.on('connection', (socket) => {
   console.log(`User ${socket.id} has connected.`)
@@ -52,11 +68,6 @@ io.on('connection', (socket) => {
     io.to(room).emit('room-status-reply', playerStatus)
   })
 
-  /* Ao tentar atualizar o deck do player */
-  socket.on('publish-deck', (room, deck) => {
-    socket.to(room).emit('notify-deck', deck)
-  })
-
   socket.on('publish-state', (room, state) => {
     socket.to(room).emit('notification-state', state)
   })
@@ -88,16 +99,28 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`User ${socket.id} has disconnected.`)
   })
+
+  /* Ao tentar atualizar o deck do player */
+  socket.on('publish-deck', (room, deck) => {
+    socket.to(room).emit('notify-deck', deck)
+  })
+
+  /* Ao tentar jogar uma carta */
+  socket.on('play-card', (room, cardObject) => {
+    cardObject.x = 400
+    cardObject.y = 225
+    io.to(room).emit('summon-unit', cardObject)
+  })
 })
 
 /* Função que gera valores 1000 ~ 9999 não-utilizados em salas */
 function rngRoom () {
-  const min = 1000
-  const max = 9999
-  const rng = Math.floor(Math.random() * (max - min + 1) + min)
-
-  if (io.sockets.adapter.rooms.has(rng)) { this.rngRoom() }
-
+  // TODO: Restaurar essa função
+  // const min = 1000
+  // const max = 9999
+  // const rng = Math.floor(Math.random() * (max - min + 1) + min)
+  const rng = 1111
+  // if (io.sockets.adapter.rooms.has(rng)) { this.rngRoom() }
   return rng
 }
 
