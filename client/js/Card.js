@@ -43,7 +43,7 @@ export default class Card extends Phaser.GameObjects.Container {
     this.effectCounter = this.scene.tweens.addCounter({
       from: 0.2,
       to: 0.8,
-      duration: 400,
+      duration: 500,
       yoyo: true,
       loop: -1,
       onUpdate: (tween) => {

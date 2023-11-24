@@ -12,6 +12,9 @@ export default class battleMatch extends Phaser.Scene {
 
   preload () {
     this.load.image('forest', '../../assets/battleBg/forest.png')
+    this.load.image('vignette', '../../assets/battleBg/vignette.png')
+    this.load.spritesheet('spark', '../../assets/battleBg/spark.png', { frameWidth: 32, frameHeight: 32 })
+
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
     this.load.image('testSprite', '../../assets/cardsSprites/testSprite.png')
 
@@ -107,6 +110,28 @@ export default class battleMatch extends Phaser.Scene {
 
     /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
+    this.vignette = this.add.sprite(400, 225, 'vignette')
+      .setVisible(false)
+    this.anims.create({
+      key: 'sparkAnim',
+      frames: this.anims.generateFrameNumbers('spark', { start: 0, end: 11 }),
+      frameRate: 20,
+      repeat: -1
+    })
+    this.spark = this.add.sprite(400, 225, 'spark')
+      .play('sparkAnim')
+
+    this.vignetteFX = this.tweens.addCounter({
+      from: 0.1,
+      to: 1,
+      duration: 1000,
+      yoyo: true,
+      loop: -1,
+      onUpdate: (tween) => {
+        const alpha = tween.getValue()
+        this.vignette.setAlpha(alpha)
+      }
+    })
 
     /* Criação dos Cards */
     this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
@@ -122,8 +147,10 @@ export default class battleMatch extends Phaser.Scene {
       gameObject.x = dragX
       gameObject.y = dragY - 70
       if (gameObject.y < 300) {
+        this.vignette.setVisible(true)
         gameObject.bgEffect.setVisible(true)
       } else {
+        this.vignette.setVisible(false)
         gameObject.bgEffect.setVisible(false)
       }
     })
