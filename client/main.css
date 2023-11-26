@@ -22,3 +22,8 @@ html {
   font-family: "PressStart2P";
   src: url('./assets/fonts/PressStart2P.ttf');
 }
+
+@font-face {
+  font-family: "VT323";
+  src: url('./assets/fonts/VT323.ttf');
+}

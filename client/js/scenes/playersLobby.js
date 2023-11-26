@@ -21,10 +21,6 @@ export default class playersLobby extends Phaser.Scene {
         .catch((error) => console.log(error))
     }
 
-    this.load.script(
-      'webfont',
-      'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'
-    )
     this.load.image('forest', '../../assets/battleBg/forest.png')
 
     settings.preloadElements(this)
@@ -45,14 +41,6 @@ export default class playersLobby extends Phaser.Scene {
     })
 
     this.game.socket.emit('room-status-request', this.game.roomNo)
-
-    /* global WebFont */
-    WebFont.load({
-      custom: {
-        families: ['PressStart2P'],
-        urls: ['../main.css']
-      }
-    })
 
     this.add.text(400, 225, 'ENTRAR')
       .setInteractive()

@@ -5,7 +5,10 @@ export default class logoEntry extends Phaser.Scene {
   }
 
   preload () {
-
+    this.load.script(
+      'webfont',
+      'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'
+    )
   }
 
   create () {
@@ -14,9 +17,22 @@ export default class logoEntry extends Phaser.Scene {
       .on('pointerdown', () => {
         this.scene.start('mainMenu')
       })
+
+    /* global WebFont */
+    WebFont.load({
+      custom: {
+        families: ['PressStart2P'],
+        urls: ['../main.css']
+      }
+    })
+
+    WebFont.load({
+      custom: {
+        families: ['VT323'],
+        urls: ['../main.css']
+      }
+    })
   }
 
-  update (time, delta) {
-
-  }
+  update (time, delta) {}
 }
