@@ -54,7 +54,7 @@ class Game extends Phaser.Game {
     this.scene.add('claimCredits', claimCredits)
 
     /* Cena de início */
-    this.scene.start('roomLobby')
+    this.scene.start('logoEntry')
   }
 }
 

@@ -141,7 +141,7 @@ export default class Card extends Phaser.GameObjects.Container {
           fontFamily: 'PressStart2P',
           fontSize: '20px',
           resolution: 2,
-          color: '#FAFAFA',
+          fill: '#f9f9f9',
           stroke: '#050505',
           strokeThickness: 2,
           shadow: {

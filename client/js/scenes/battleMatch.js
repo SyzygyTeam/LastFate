@@ -12,7 +12,7 @@ export default class battleMatch extends Phaser.Scene {
 
   preload () {
     this.load.image('forest', '../../assets/battleBg/forest.png')
-    this.load.image('vignette', '../../assets/battleBg/vignette.png')
+    this.load.image('whiteVignette', '../../assets/battleBg/whiteVignette.png')
     this.load.spritesheet('spark', '../../assets/battleBg/spark.png', { frameWidth: 32, frameHeight: 32 })
 
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
@@ -22,48 +22,18 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   create () {
+    this.game.socket.on('start-match', (npcChoice) => {
+      this.npcChoice = npcChoice
+    })
+
+    /* Avisar server */
+    if (this.game.player === 'p1') {
+      this.game.socket.emit('players-ready', this.game.roomNo)
+    }
+
     /* VOIP P2 */
     if (this.game.player === 'p2') {
-      navigator.mediaDevices
-        .getUserMedia({ video: false, audio: true })
-        .then((stream) => {
-          console.log(stream)
-
-          this.game.localConnection = new RTCPeerConnection(
-            this.game.ice_servers
-          )
-
-          stream
-            .getTracks()
-            .forEach((track) =>
-              this.game.localConnection.addTrack(track, stream)
-            )
-
-          this.game.localConnection.onicecandidate = ({ candidate }) => {
-            candidate &&
-              this.game.socket.emit('candidate', this.game.roomNo, candidate)
-          }
-
-          this.game.localConnection.ontrack = ({ streams: [stream] }) => {
-            this.game.audio.srcObject = stream
-          }
-
-          this.game.localConnection
-            .createOffer()
-            .then((offer) =>
-              this.game.localConnection.setLocalDescription(offer)
-            )
-            .then(() => {
-              this.game.socket.emit(
-                'offer',
-                this.game.roomNo,
-                this.game.localConnection.localDescription
-              )
-            })
-
-          this.game.midias = stream
-        })
-        .catch((error) => console.log(error))
+      this.runVoip()
     }
 
     this.game.socket.on('offer', (description) => {
@@ -110,7 +80,7 @@ export default class battleMatch extends Phaser.Scene {
 
     /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
-    this.vignette = this.add.sprite(400, 225, 'vignette')
+    this.whiteVignette = this.add.sprite(400, 225, 'whiteVignette')
       .setVisible(false)
     this.anims.create({
       key: 'sparkAnim',
@@ -118,10 +88,12 @@ export default class battleMatch extends Phaser.Scene {
       frameRate: 20,
       repeat: -1
     })
+    /*
     this.spark = this.add.sprite(400, 225, 'spark')
       .play('sparkAnim')
+    */
 
-    this.vignetteFX = this.tweens.addCounter({
+    this.whiteVignetteFX = this.tweens.addCounter({
       from: 0.1,
       to: 1,
       duration: 1000,
@@ -129,14 +101,16 @@ export default class battleMatch extends Phaser.Scene {
       loop: -1,
       onUpdate: (tween) => {
         const alpha = tween.getValue()
-        this.vignette.setAlpha(alpha)
+        this.whiteVignette.setAlpha(alpha)
       }
     })
 
-    /* Criação dos Cards */
-    this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
-    this.card2 = new Card(this, 400 * 1.5, 440, cardList.pequenoMago)
-    this.card3 = new Card(this, 400 / 2, 440, cardList.bonecoDeTeste)
+    /* Tela de seleção de turno */
+    this.darkBG = this.add.rectangle(400, 225, 800, 450, 0x000000)
+      .setAlpha(0.5)
+
+    this.titleText = this.add.text(400, 100, 'Selecionem seus turnos')
+      .setOrigin(0.5)
 
     this.game.socket.on('summon-unit', (card) => {
       console.log(card)
@@ -147,15 +121,66 @@ export default class battleMatch extends Phaser.Scene {
       gameObject.x = dragX
       gameObject.y = dragY - 70
       if (gameObject.y < 300) {
-        this.vignette.setVisible(true)
+        this.whiteVignette.setVisible(true)
         gameObject.bgEffect.setVisible(true)
       } else {
-        this.vignette.setVisible(false)
+        this.whiteVignette.setVisible(false)
         gameObject.bgEffect.setVisible(false)
       }
     })
 
     settings.displaySettings(this)
+  }
+
+  runVoip () {
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        console.log(stream)
+
+        this.game.localConnection = new RTCPeerConnection(
+          this.game.ice_servers
+        )
+
+        stream
+          .getTracks()
+          .forEach((track) =>
+            this.game.localConnection.addTrack(track, stream)
+          )
+
+        this.game.localConnection.onicecandidate = ({ candidate }) => {
+          candidate &&
+          this.game.socket.emit('candidate', this.game.roomNo, candidate)
+        }
+
+        this.game.localConnection.ontrack = ({ streams: [stream] }) => {
+          this.game.audio.srcObject = stream
+        }
+
+        this.game.localConnection
+          .createOffer()
+          .then((offer) =>
+            this.game.localConnection.setLocalDescription(offer)
+          )
+          .then(() => {
+            this.game.socket.emit(
+              'offer',
+              this.game.roomNo,
+              this.game.localConnection.localDescription
+            )
+          })
+
+        this.game.midias = stream
+      })
+      .catch((error) => console.log(error))
+  }
+
+  startMatch () {
+    this.game.socket.emit('start-match', this.game.roomNo)
+    /* Criação dos Cards */
+    this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
+    this.card2 = new Card(this, 400 * 1.5, 440, cardList.pequenoMago)
+    this.card3 = new Card(this, 400 / 2, 440, cardList.bonecoDeTeste)
   }
 
   playCard (cardInfo, card) {

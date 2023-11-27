@@ -21,12 +21,40 @@ export default class playersLobby extends Phaser.Scene {
         .catch((error) => console.log(error))
     }
 
-    this.load.image('forest', '../../assets/battleBg/forest.png')
+    this.load.image('bgPorta', '../../assets/roomLobby/bgPorta.png')
 
     settings.preloadElements(this)
   }
 
   create () {
+    this.hugeTextFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '30px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
+    this.thinTextFormat = {
+      fontFamily: 'VT323',
+      fontSize: '50px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
     /* Mensagens */
     this.game.socket.on('room-status-reply', (playerStatus) => {
       this.playerStatus = playerStatus
@@ -36,17 +64,47 @@ export default class playersLobby extends Phaser.Scene {
         this.statusMessage.destroy()
       }
       /* Adiciona o status na tela */
-      this.statusRoomNo = this.add.text(20, 20, `Sua sala: ${this.game.roomNo}`)
-      this.statusMessage = this.add.text(20, 40, `Jogadores: ${this.playerStatus} / 2`)
+      this.statusRoomNo = this.add.text(400, 195, `Sua sala: ${this.game.roomNo}`, this.thinTextFormat)
+        .setOrigin(0.5, 0.5)
+      this.statusMessage = this.add.text(400, 255, `Jogadores: ${this.playerStatus} / 2`, this.thinTextFormat)
+        .setOrigin(0.5, 0.5)
+
+      if (this.playerStatus === 1) {
+        this.waitMessage = this.add.text(400, 350, ['Aguardando', 'segundo jogador...'], this.hugeTextFormat)
+          .setAlign('center')
+          .setOrigin(0.5, 0.5)
+      } else {
+        if (this.waitMessage) { this.waitMessage.destroy() }
+        this.add.text(400, 350, 'Começando partida!', this.hugeTextFormat)
+          .setOrigin(0.5, 0.5)
+
+        this.countdownText = this.add.text(400, 400, '5', this.hugeTextFormat)
+          .setOrigin(0.5, 0.5)
+
+        let countdown = 5
+        const countdownInterval = setInterval(() => {
+          countdown--
+          this.countdownText.setText(countdown.toString())
+
+          if (countdown === 0) {
+            clearInterval(countdownInterval)
+            this.scene.start('battleMatch')
+          }
+        }, 1000)
+      }
     })
 
     this.game.socket.emit('room-status-request', this.game.roomNo)
+
+    this.add.image(400, 225, 'bgPorta')
+    this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
 
     this.add.text(400, 225, 'ENTRAR')
       .setInteractive()
       .on('pointerdown', () => {
         this.scene.start('battleMatch')
       })
+      .setVisible(false)
 
     settings.displaySettings(this)
   }

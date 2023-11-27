@@ -9,12 +9,61 @@ export default class roomLobby extends Phaser.Scene {
   }
 
   preload () {
+    this.load.image('bgPorta', '../../assets/roomLobby/bgPorta.png')
+    this.load.image('createRoom', '../../assets/roomLobby/createRoom.png')
+    this.load.image('enterRoom', '../../assets/roomLobby/enterRoom.png')
     settings.preloadElements(this)
   }
 
   create () {
-    /* Mensagens do server */
+    this.keyboardFormat = {
+      fontFamily: 'VT323',
+      fontSize: '70px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
 
+    this.add.image(400, 225, 'bgPorta')
+    this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
+
+    this.titleText = this.add.text(400, 50, 'Entrar numa aventura', {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
+      .setOrigin(0.5, 0)
+
+    this.orText = this.add.text(400, 225, 'ou', {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
+      resolution: 2,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
+      .setOrigin(0.5, 0)
+
+    /* Mensagens do server */
     /* Entrou normalmente numa sala */
     this.game.socket.on('enter-room-ok', (room) => {
       this.game.roomNo = room.no
@@ -23,7 +72,20 @@ export default class roomLobby extends Phaser.Scene {
 
     /* Sala inserida não existe */
     this.game.socket.on('enter-room-404', (room) => {
-      this.errorMessage = this.add.text(300, 300, `Sala ${room.no} não existe`)
+      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} não existe`, {
+        fontFamily: 'PressStart2P',
+        fontSize: '23px',
+        resolution: 2,
+        fill: '#f9f9f9',
+        stroke: '#050505',
+        strokeThickness: 2,
+        shadow: {
+          offsetX: 4,
+          offsetY: 4,
+          fill: true
+        }
+      })
+        .setOrigin(0.5, 0)
       this.onError = true
       for (let i = 0; i < 4; i++) {
         this.removeChar(i)
@@ -32,7 +94,20 @@ export default class roomLobby extends Phaser.Scene {
 
     /* Sala inserida já possui dois jogadores (Cheio) */
     this.game.socket.on('enter-room-full', (room) => {
-      this.errorMessage = this.add.text(300, 300, `Sala ${room.no} está cheia`)
+      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} está cheia`, {
+        fontFamily: 'PressStart2P',
+        fontSize: '23px',
+        resolution: 2,
+        fill: '#f9f9f9',
+        stroke: '#050505',
+        strokeThickness: 2,
+        shadow: {
+          offsetX: 4,
+          offsetY: 4,
+          fill: true
+        }
+      })
+        .setOrigin(0.5, 0)
       this.onError = true
       for (let i = 0; i < 4; i++) {
         this.removeChar(i)
@@ -51,28 +126,89 @@ export default class roomLobby extends Phaser.Scene {
     /* Criação do Teclado Virtual */
     this.createKeyboard()
 
-    this.add.text(100, 200, 0)
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.press(0)
-      })
-    this.add.text(150, 200, 'OK')
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.confirm()
-      })
-    this.add.text(50, 200, '<')
+    this.backspaceKey = this.add.text(340, 360, '<', {
+      fontFamily: 'VT323',
+      fontSize: '70px',
+      fill: '#f90505',
+      resolution: 2,
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
       .setInteractive()
       .on('pointerdown', () => {
         this.removeChar()
       })
+      .setOrigin(0.5, 0)
+      .setVisible(false)
+
+    this.zeroKey = this.add.text(400, 360, 0, {
+      fontFamily: 'VT323',
+      fontSize: '70px',
+      resolution: 2,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.press(0)
+      })
+      .setOrigin(0.5, 0)
+      .setVisible(false)
+
+    this.okKey = this.add.text(460, 360, 'OK', {
+      fontFamily: 'VT323',
+      fontSize: '70px',
+      fill: '#05f905',
+      resolution: 2,
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.confirm()
+      })
+      .setOrigin(0.5, 0)
+      .setVisible(false)
 
     /* Botão de criar sala aleatória */
-    this.createRoom = this.add.text(50, 300, 'Criar Sala')
+    this.createRoom = this.add.sprite(400, 200, 'createRoom')
       .setInteractive()
       .on('pointerdown', () => {
         this.game.player = 'p1'
         this.game.socket.emit('create-room')
+      })
+
+    /* Botão de revelar teclado */
+    this.enterRoom = this.add.sprite(400, 280, 'enterRoom')
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.titleText.setText('Digite o código da sala')
+        this.createRoom.setVisible(false)
+        this.orText.setVisible(false)
+        this.enterRoom.setVisible(false)
+
+        for (let i = 0; i < 9; i++) {
+          this.numerals[i].setVisible(true)
+        }
+        this.zeroKey.setVisible(true)
+        this.okKey.setVisible(true)
+        this.backspaceKey.setVisible(true)
       })
 
     settings.displaySettings(this)
@@ -80,12 +216,19 @@ export default class roomLobby extends Phaser.Scene {
 
   /* Cria o teclado 1 ~ 9 */
   createKeyboard () {
+    this.numerals = Array(9).fill(undefined)
     for (let i = 0; i < 9; i++) {
-      this.add.text(50 * ((i % 3) + 1), 50 * (Math.floor(i / 3) + 1), i + 1)
+      this.numerals[i] = this.add.text(
+        60 * ((i % 3) + 1) + 280,
+        60 * (Math.floor(i / 3) + 1) + 120,
+        i + 1,
+        this.keyboardFormat)
+        .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
           this.press(i + 1)
         })
+        .setVisible(false)
     }
   }
 
@@ -94,7 +237,24 @@ export default class roomLobby extends Phaser.Scene {
     /* Checa se irá exceder o limite de char das salas (4) */
     if (this.displayText.length === 4) { return }
 
-    const txt = this.add.text(300 + (this.displayText.length * 10), 200, value)
+    if (this.onError === true) {
+      this.errorMessage.destroy()
+      this.onError = false
+    }
+
+    const txt = this.add.text(300 + (this.displayText.length * 65), 120, value, {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
+      resolution: 2,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    })
     this.displayText.push(txt)
     this.typedRoom.push(value)
   }
