@@ -4,6 +4,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const PORT = process.env.PORT || 3000
 
+/*
 const rooms = {
   state: 0,
   size: 0,
@@ -19,6 +20,7 @@ const rooms = {
     units: []
   }
 }
+*/
 
 /* Ao tentar conectar ao server */
 io.on('connection', (socket) => {
@@ -110,6 +112,10 @@ io.on('connection', (socket) => {
     cardObject.x = 400
     cardObject.y = 225
     io.to(room).emit('summon-unit', cardObject)
+  })
+
+  socket.on('occupy-turn', (room, turn) => {
+    socket.to(room).emit('notify-turn', turn)
   })
 })
 

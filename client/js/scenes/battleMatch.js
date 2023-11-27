@@ -22,18 +22,38 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   create () {
-    this.game.socket.on('start-match', (npcChoice) => {
-      this.npcChoice = npcChoice
-    })
+    this.hugeTextFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '30px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
 
-    /* Avisar server */
-    if (this.game.player === 'p1') {
-      this.game.socket.emit('players-ready', this.game.roomNo)
+    this.thinTextFormat = {
+      fontFamily: 'VT323',
+      fontSize: '50px',
+      resolution: 2,
+      color: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
     }
 
     /* VOIP P2 */
     if (this.game.player === 'p2') {
       this.runVoip()
+      this.game.socket.emit('players-ready', this.game.roomNo)
     }
 
     this.game.socket.on('offer', (description) => {
@@ -78,6 +98,13 @@ export default class battleMatch extends Phaser.Scene {
       conn.addIceCandidate(new RTCIceCandidate(candidate))
     })
 
+    this.game.socket.on('summon-unit', (card) => {
+      console.log(card)
+      this.add.sprite(card.x, card.y, card.sprite)
+    })
+
+    this.game.socket.on('start-match', () => { this.startMatch() })
+
     /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
     this.whiteVignette = this.add.sprite(400, 225, 'whiteVignette')
@@ -109,13 +136,26 @@ export default class battleMatch extends Phaser.Scene {
     this.darkBG = this.add.rectangle(400, 225, 800, 450, 0x000000)
       .setAlpha(0.5)
 
-    this.titleText = this.add.text(400, 100, 'Selecionem seus turnos')
+    this.titleText = this.add.text(400, 100, 'Selecionem seus turnos', this.hugeTextFormat)
       .setOrigin(0.5)
 
-    this.game.socket.on('summon-unit', (card) => {
-      console.log(card)
-      this.add.sprite(card.x, card.y, card.sprite)
-    })
+    this.turnChoiceSprites = Array(3)
+
+    for (let i = 0; i < 3; i++) {
+      this.turnChoiceSprites[i] = this.add.sprite(200 * i + 200, 225, 'testSprite')
+        .setInteractive()
+        .on('pointerdown', () => {
+          console.log('Turno ' + (i + 1))
+          this.game.socket.emit('occupy-turn', this.game.roomNo, i + 1)
+        })
+    }
+
+    this.titleText = this.add.text(400, 350, '- Pronto ( 0 / 2 ) -', this.thinTextFormat)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+
+      })
 
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
@@ -150,7 +190,7 @@ export default class battleMatch extends Phaser.Scene {
 
         this.game.localConnection.onicecandidate = ({ candidate }) => {
           candidate &&
-          this.game.socket.emit('candidate', this.game.roomNo, candidate)
+            this.game.socket.emit('candidate', this.game.roomNo, candidate)
         }
 
         this.game.localConnection.ontrack = ({ streams: [stream] }) => {
@@ -188,6 +228,5 @@ export default class battleMatch extends Phaser.Scene {
     card.setVisible(false)
   }
 
-  update (time, delta) {
-  }
+  update (time, delta) { }
 }
