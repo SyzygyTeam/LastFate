@@ -6,6 +6,7 @@ const precacheResources = [
   './',
   './index.html',
   './main.css',
+  './manifest.json',
   './assets/logo/128.png',
   './assets/logo/192.png',
   './assets/logo/256.png',
