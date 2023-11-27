@@ -26,7 +26,7 @@ export default class battleMatch extends Phaser.Scene {
       fontFamily: 'PressStart2P',
       fontSize: '30px',
       resolution: 2,
-      color: '#f9f9f9',
+      fill: '#f9f9f9',
       stroke: '#050505',
       strokeThickness: 2,
       shadow: {
@@ -40,7 +40,7 @@ export default class battleMatch extends Phaser.Scene {
       fontFamily: 'VT323',
       fontSize: '50px',
       resolution: 2,
-      color: '#f9f9f9',
+      fill: '#f9f9f9',
       stroke: '#050505',
       strokeThickness: 2,
       shadow: {

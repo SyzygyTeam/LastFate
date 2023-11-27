@@ -60,7 +60,7 @@ export default class Card extends Phaser.GameObjects.Container {
       {
         resolution: 8,
         fontFamily: 'PressStart2P',
-        color: '#050505',
+        fill: '#050505',
         fontSize: '15px'
       }
     )
@@ -74,7 +74,7 @@ export default class Card extends Phaser.GameObjects.Container {
         fontFamily: 'PressStart2P',
         fontSize: '15px',
         resolution: 8,
-        color: '#050505',
+        fill: '#050505',
         align: 'center',
         wordWrap: {
           width: 250,
