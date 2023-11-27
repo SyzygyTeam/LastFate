@@ -42,10 +42,9 @@ const precacheResources = [
   './js/scenes/playersLobby.js',
   './js/scenes/roomLobby.js',
   './js/axios.min.js',
-  './js/Cards.js',
+  './js/Card.js',
   './js/cardList.js',
   './js/config.js',
-  './js/manifest.json',
   './js/index.js',
   './js/phaser.min.js',
   './js/settingsMenu.js'
