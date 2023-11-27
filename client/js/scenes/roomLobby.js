@@ -16,6 +16,7 @@ export default class roomLobby extends Phaser.Scene {
   }
 
   create () {
+    /* Formatações de texto */
     this.keyboardFormat = {
       fontFamily: 'VT323',
       fontSize: '70px',
@@ -30,10 +31,7 @@ export default class roomLobby extends Phaser.Scene {
       }
     }
 
-    this.add.image(400, 225, 'bgPorta')
-    this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
-
-    this.titleText = this.add.text(400, 50, 'Entrar numa aventura', {
+    this.titleFormat = {
       fontFamily: 'PressStart2P',
       fontSize: '23px',
       resolution: 2,
@@ -45,22 +43,15 @@ export default class roomLobby extends Phaser.Scene {
         offsetY: 4,
         fill: true
       }
-    })
+    }
+
+    this.add.image(400, 225, 'bgPorta')
+    this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
+
+    this.titleText = this.add.text(400, 50, 'Junte-se a sua dupla!', this.titleFormat)
       .setOrigin(0.5, 0)
 
-    this.orText = this.add.text(400, 225, 'ou', {
-      fontFamily: 'PressStart2P',
-      fontSize: '23px',
-      resolution: 2,
-      fill: '#f9f9f9',
-      stroke: '#050505',
-      strokeThickness: 2,
-      shadow: {
-        offsetX: 4,
-        offsetY: 4,
-        fill: true
-      }
-    })
+    this.orText = this.add.text(400, 225, 'ou', this.titleFormat)
       .setOrigin(0.5, 0)
 
     /* Mensagens do server */
@@ -72,19 +63,7 @@ export default class roomLobby extends Phaser.Scene {
 
     /* Sala inserida não existe */
     this.game.socket.on('enter-room-404', (room) => {
-      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} não existe`, {
-        fontFamily: 'PressStart2P',
-        fontSize: '23px',
-        resolution: 2,
-        fill: '#f9f9f9',
-        stroke: '#050505',
-        strokeThickness: 2,
-        shadow: {
-          offsetX: 4,
-          offsetY: 4,
-          fill: true
-        }
-      })
+      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} não existe`, this.titleFormat)
         .setOrigin(0.5, 0)
       this.onError = true
       for (let i = 0; i < 4; i++) {
@@ -94,19 +73,7 @@ export default class roomLobby extends Phaser.Scene {
 
     /* Sala inserida já possui dois jogadores (Cheio) */
     this.game.socket.on('enter-room-full', (room) => {
-      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} está cheia`, {
-        fontFamily: 'PressStart2P',
-        fontSize: '23px',
-        resolution: 2,
-        fill: '#f9f9f9',
-        stroke: '#050505',
-        strokeThickness: 2,
-        shadow: {
-          offsetX: 4,
-          offsetY: 4,
-          fill: true
-        }
-      })
+      this.errorMessage = this.add.text(400, 120, `Sala ${room.no} está cheia`, this.titleFormat)
         .setOrigin(0.5, 0)
       this.onError = true
       for (let i = 0; i < 4; i++) {
@@ -195,7 +162,7 @@ export default class roomLobby extends Phaser.Scene {
       })
 
     /* Botão de revelar teclado */
-    this.enterRoom = this.add.sprite(400, 280, 'enterRoom')
+    this.enterRoom = this.add.sprite(400, 285, 'enterRoom')
       .setInteractive()
       .on('pointerdown', () => {
         this.titleText.setText('Digite o código da sala')
@@ -212,6 +179,7 @@ export default class roomLobby extends Phaser.Scene {
       })
 
     settings.displaySettings(this)
+    this.cameras.main.fadeIn(1000)
   }
 
   /* Cria o teclado 1 ~ 9 */

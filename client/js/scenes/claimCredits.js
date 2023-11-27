@@ -168,5 +168,5 @@ export default class claimCredits extends Phaser.Scene {
       })
   }
 
-  update () { }
+  update (time, delta) { }
 }

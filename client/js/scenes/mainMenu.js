@@ -68,7 +68,11 @@ export default class mainMenu extends Phaser.Scene {
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.start('roomLobby')
+        this.cameras.main.fadeOut(400, 0, 0, 0)
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.playButton.disableInteractive()
+          this.scene.start('roomLobby')
+        })
       })
 
     this.creditsButton = this.add.sprite(20, 350, 'creditsButton')
@@ -79,9 +83,8 @@ export default class mainMenu extends Phaser.Scene {
       })
 
     settings.displaySettings(this)
+    this.cameras.main.fadeIn(1000)
   }
 
-  update (time, delta) {
-
-  }
+  update (time, delta) { }
 }

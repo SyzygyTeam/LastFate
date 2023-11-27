@@ -64,9 +64,9 @@ export default class playersLobby extends Phaser.Scene {
         this.statusMessage.destroy()
       }
       /* Adiciona o status na tela */
-      this.statusRoomNo = this.add.text(400, 195, `Sua sala: ${this.game.roomNo}`, this.thinTextFormat)
+      this.statusRoomNo = this.add.text(400, 200, `Sua sala: ${this.game.roomNo}`, this.thinTextFormat)
         .setOrigin(0.5, 0.5)
-      this.statusMessage = this.add.text(400, 255, `Jogadores: ${this.playerStatus} / 2`, this.thinTextFormat)
+      this.statusMessage = this.add.text(400, 250, `Jogadores: ${this.playerStatus} / 2`, this.thinTextFormat)
         .setOrigin(0.5, 0.5)
 
       if (this.playerStatus === 1) {
@@ -75,18 +75,19 @@ export default class playersLobby extends Phaser.Scene {
           .setOrigin(0.5, 0.5)
       } else {
         if (this.waitMessage) { this.waitMessage.destroy() }
+
         this.add.text(400, 350, 'Começando partida!', this.hugeTextFormat)
           .setOrigin(0.5, 0.5)
 
-        this.countdownText = this.add.text(400, 400, '5', this.hugeTextFormat)
+        this.countdownText = this.add.text(400, 400, '- 5 -', this.hugeTextFormat)
           .setOrigin(0.5, 0.5)
 
         let countdown = 5
         const countdownInterval = setInterval(() => {
           countdown--
-          this.countdownText.setText(countdown.toString())
+          this.countdownText.setText(`- ${countdown} -`)
 
-          if (countdown === 0) {
+          if ((countdown === 0 && this.game.player === 'p1') || (countdown === -1 && this.game.player === 'p2')) {
             clearInterval(countdownInterval)
             this.scene.start('battleMatch')
           }
@@ -98,13 +99,6 @@ export default class playersLobby extends Phaser.Scene {
 
     this.add.image(400, 225, 'bgPorta')
     this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
-
-    this.add.text(400, 225, 'ENTRAR')
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.scene.start('battleMatch')
-      })
-      .setVisible(false)
 
     settings.displaySettings(this)
   }
