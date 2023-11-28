@@ -11,9 +11,12 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   preload () {
-    this.load.image('forest', '../../assets/battleBg/forest.png')
-    this.load.image('whiteVignette', '../../assets/battleBg/whiteVignette.png')
-    this.load.spritesheet('spark', '../../assets/battleBg/spark.png', { frameWidth: 32, frameHeight: 32 })
+    this.load.image('forest', '../../assets/battleMatch/forest.png')
+    this.load.image('atk', '../../assets/battleMatch/atk.png')
+    this.load.image('def', '../../assets/battleMatch/def.png')
+    this.load.image('frame', '../../assets/battleMatch/frame.png')
+    this.load.image('whiteVignette', '../../assets/battleMatch/whiteVignette.png')
+    this.load.spritesheet('spark', '../../assets/battleMatch/spark.png', { frameWidth: 32, frameHeight: 32 })
 
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
     this.load.image('testSprite', '../../assets/cardsSprites/testSprite.png')
@@ -22,10 +25,11 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   create () {
+    /* Formatação de Texto */
     this.hugeTextFormat = {
       fontFamily: 'PressStart2P',
       fontSize: '30px',
-      resolution: 2,
+      resolution: 0.7,
       fill: '#f9f9f9',
       stroke: '#050505',
       strokeThickness: 2,
@@ -39,7 +43,7 @@ export default class battleMatch extends Phaser.Scene {
     this.thinTextFormat = {
       fontFamily: 'VT323',
       fontSize: '50px',
-      resolution: 2,
+      resolution: 0.7,
       fill: '#f9f9f9',
       stroke: '#050505',
       strokeThickness: 2,
@@ -98,13 +102,6 @@ export default class battleMatch extends Phaser.Scene {
       conn.addIceCandidate(new RTCIceCandidate(candidate))
     })
 
-    this.game.socket.on('summon-unit', (card) => {
-      console.log(card)
-      this.add.sprite(card.x, card.y, card.sprite)
-    })
-
-    this.game.socket.on('start-match', () => { this.startMatch() })
-
     /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
     this.whiteVignette = this.add.sprite(400, 225, 'whiteVignette')
@@ -120,6 +117,7 @@ export default class battleMatch extends Phaser.Scene {
       .play('sparkAnim')
     */
 
+    /* Efeitos de Vignette */
     this.whiteVignetteFX = this.tweens.addCounter({
       from: 0.1,
       to: 1,
@@ -132,31 +130,91 @@ export default class battleMatch extends Phaser.Scene {
       }
     })
 
-    /* Tela de seleção de turno */
+    /* Tela de seleção de turnos */
     this.darkBG = this.add.rectangle(400, 225, 800, 450, 0x000000)
       .setAlpha(0.5)
 
-    this.titleText = this.add.text(400, 100, 'Selecionem seus turnos', this.hugeTextFormat)
+    /* Título da seleção de turnos */
+    this.titleText = this.add.text(400, 70, 'Selecionem seus turnos', this.hugeTextFormat)
       .setOrigin(0.5)
 
+    /* Ícones interativos */
     this.turnChoiceSprites = Array(3)
+    this.atkChoiceSprites = Array(2)
+    this.defChoiceSprites = Array(2)
 
     for (let i = 0; i < 3; i++) {
-      this.turnChoiceSprites[i] = this.add.sprite(200 * i + 200, 225, 'testSprite')
+      this.turnChoiceSprites[i] = this.add.sprite(200 * i + 200, 225, 'frame')
+        .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          console.log('Turno ' + (i + 1))
           this.game.socket.emit('occupy-turn', this.game.roomNo, i + 1)
+        })
+
+      this.turnNumberText = this.add.text(200 * i + 200, 225, i + 1, this.hugeTextFormat)
+        .setOrigin(0.5)
+
+      this.atkChoiceSprites[i] = this.add.sprite(200 * i + 200, 150, 'atk')
+        .setScale(2)
+        .setInteractive()
+        .on('pointerdown', () => {
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, { no: i + 1, isAttacker: true })
+        })
+      this.defChoiceSprites[i] = this.add.sprite(200 * i + 200, 300, 'def')
+        .setScale(2)
+        .setInteractive()
+        .on('pointerdown', () => {
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, { no: i + 1, isAttacker: false })
         })
     }
 
-    this.titleText = this.add.text(400, 350, '- Pronto ( 0 / 2 ) -', this.thinTextFormat)
+    /* NPC ocupa um turno */
+    this.game.socket.on('npc-choice', (choice) => {
+      this.atkChoiceSprites[choice].setVisible(false)
+      this.defChoiceSprites[choice].setVisible(false)
+      this.turnChoiceSprites[choice].setTint(0x9a0505)
+    })
+
+    /* Atualiza os ícones */
+    this.game.socket.on('notify-turn', (player, turn) => {
+      let fillColor
+      player === 'p1' ? fillColor = 0x9a0505 : fillColor = 0x05059a
+
+      if (turn.isAttacker) {
+        for (let i = 0; i < this.atkChoiceSprites.length; i++) {
+          if (this.atkChoiceSprites[i]) {
+            if (i === turn.no - 1) { this.atkChoiceSprites[turn.no - 1].setTint(fillColor) } else {
+              this.atkChoiceSprites[i].setTint(0x9a9a9a)
+            }
+            this.atkChoiceSprites[i].disableInteractive()
+          }
+        }
+      } else {
+        for (let i = 0; i < this.defChoiceSprites.length; i++) {
+          if (this.defChoiceSprites[i]) {
+            if (i === turn.no - 1) { this.defChoiceSprites[turn.no - 1].setTint(fillColor) } else {
+              this.defChoiceSprites[i].setTint(0x9a9a9a)
+            }
+            this.defChoiceSprites[i].disableInteractive()
+          }
+        }
+      }
+    })
+
+    this.readyButton = this.add.text(400, 380, '- Pronto -', this.thinTextFormat)
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
 
       })
 
+    this.game.socket.on('summon-unit', (card) => {
+      this.add.sprite(card.x, card.y, card.sprite)
+    })
+
+    this.game.socket.on('start-match', () => { this.startMatch() })
+
+    /* Arrastar carta */
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
       gameObject.y = dragY - 70

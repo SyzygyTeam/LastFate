@@ -4,23 +4,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const PORT = process.env.PORT || 3000
 
-/*
-const rooms = {
-  state: 0,
-  size: 0,
-  npc: {
-    name: ''
-  },
-  allyField: {
-    size: 0,
-    units: []
-  },
-  enemyField: {
-    size: 0,
-    units: []
-  }
-}
-*/
+const roomsData = new Map()
 
 /* Ao tentar conectar ao server */
 io.on('connection', (socket) => {
@@ -33,9 +17,40 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} has created the room ${room}.`)
 
     const players = {
-      p1: socket.id,
+      p1: {
+        id: socket.id,
+        turn: { no: 0, isAttacker: false }
+      },
       p2: undefined
     }
+
+    const npc = {
+      turn: 0,
+      deck: [],
+      name: 'NPC',
+      health: 100
+    }
+
+    const allyField = {
+      size: 0,
+      units: []
+    }
+
+    const enemyField = {
+      size: 0,
+      units: []
+    }
+
+    const roomData = {
+      players,
+      npc,
+      allyField,
+      enemyField
+    }
+
+    roomsData.set(room, roomData)
+
+    console.log('>', roomsData)
 
     io.to(socket.id).emit('enter-room-ok', { no: room })
     io.to(room).emit('players', players)
@@ -55,8 +70,13 @@ io.on('connection', (socket) => {
       const [p1] = io.sockets.adapter.rooms.get(room)
       const players = {
         p1,
-        p2: socket.id
+        p2: {
+          id: socket.id,
+          turn: { no: 0, isAttacker: false }
+        }
       }
+
+      roomsData.get(room).players = players
 
       console.log(`Room ${room} filled. Match starting!`)
       io.to(socket.id).emit('enter-room-ok', { no: room })
@@ -114,8 +134,24 @@ io.on('connection', (socket) => {
     io.to(room).emit('summon-unit', cardObject)
   })
 
-  socket.on('occupy-turn', (room, turn) => {
-    socket.to(room).emit('notify-turn', turn)
+  socket.on('players-ready', (room) => {
+    const npcChoice = Math.floor(Math.random() * 3)
+    roomsData.get(room).npc.turn = npcChoice
+    io.to(room).emit('npc-choice', npcChoice)
+  })
+
+  socket.on('occupy-turn', (room, player, turn) => {
+    const roomData = roomsData.get(room)
+    const isTurnOccupied = Object.values(roomData.players).some(p => p.turn === turn)
+
+    if (!isTurnOccupied) {
+      roomData.players[player].turn = turn
+      io.to(room).emit('notify-turn', player, turn)
+    }
+  })
+
+  socket.on('undo-turn', (room, turn) => {
+    io.to(room).emit('notify-turn', turn)
   })
 })
 

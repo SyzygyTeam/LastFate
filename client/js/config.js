@@ -6,6 +6,7 @@ export default {
   width: 800,
   height: 450,
   parent: 'game-container',
+  antialias: false,
   physics: {
     default: 'arcade',
     arcade: {

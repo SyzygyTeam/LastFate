@@ -15,11 +15,11 @@ export default class logoEntry extends Phaser.Scene {
     this.bgColor = this.add.rectangle(400, 225, 800, 450, 0x222034, 50)
       .setInteractive()
       .on('pointerdown', () => {
-        this.bgColor.disableInteractive()
-        this.cameras.main.fadeOut(400, 0, 0, 0)
-        this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.scene.start('mainMenu')
-        })
+        // this.bgColor.disableInteractive()
+        // this.cameras.main.fadeOut(400, 0, 0, 0)
+        // this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.start('mainMenu')
+        // })
       })
 
     /* global WebFont */
