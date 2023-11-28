@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('undo-turn', (room, turn) => {
-    io.to(room).emit('notify-turn', turn)
+    io.to(room).emit('delete-turn', turn)
   })
 })
 

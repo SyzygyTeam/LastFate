@@ -15,6 +15,7 @@ export default class battleMatch extends Phaser.Scene {
     this.load.image('atk', '../../assets/battleMatch/atk.png')
     this.load.image('def', '../../assets/battleMatch/def.png')
     this.load.image('frame', '../../assets/battleMatch/frame.png')
+    this.load.image('undo', '../../assets/battleMatch/undo.png')
     this.load.image('whiteVignette', '../../assets/battleMatch/whiteVignette.png')
     this.load.spritesheet('spark', '../../assets/battleMatch/spark.png', { frameWidth: 32, frameHeight: 32 })
 
@@ -158,13 +159,15 @@ export default class battleMatch extends Phaser.Scene {
         .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, { no: i + 1, isAttacker: true })
+          this.turn = { no: i + 1, isAttacker: true }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, this.turn)
         })
       this.defChoiceSprites[i] = this.add.sprite(200 * i + 200, 300, 'def')
         .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, { no: i + 1, isAttacker: false })
+          this.turn = { no: i + 1, isAttacker: false }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, this.turn)
         })
     }
 
@@ -177,35 +180,54 @@ export default class battleMatch extends Phaser.Scene {
 
     /* Atualiza os ícones */
     this.game.socket.on('notify-turn', (player, turn) => {
-      let fillColor
-      player === 'p1' ? fillColor = 0x9a0505 : fillColor = 0x05059a
+      const fillColor = player === 'p1' ? 0x9a0505 : 0x05059a
+      const [activeSprites, inactiveSprites] = turn.isAttacker ? [this.atkChoiceSprites, this.defChoiceSprites] : [this.defChoiceSprites, this.atkChoiceSprites]
 
-      if (turn.isAttacker) {
-        for (let i = 0; i < this.atkChoiceSprites.length; i++) {
-          if (this.atkChoiceSprites[i]) {
-            if (i === turn.no - 1) { this.atkChoiceSprites[turn.no - 1].setTint(fillColor) } else {
-              this.atkChoiceSprites[i].setTint(0x9a9a9a)
-            }
-            this.atkChoiceSprites[i].disableInteractive()
+      activeSprites.forEach((sprite, i) => {
+        if (sprite) {
+          sprite.setTint(i === turn.no - 1 ? fillColor : 0x9a9a9a).disableInteractive()
+          if (i === turn.no - 1) {
+            inactiveSprites[i].setTint(0x9a9a9a).disableInteractive()
           }
         }
-      } else {
-        for (let i = 0; i < this.defChoiceSprites.length; i++) {
-          if (this.defChoiceSprites[i]) {
-            if (i === turn.no - 1) { this.defChoiceSprites[turn.no - 1].setTint(fillColor) } else {
-              this.defChoiceSprites[i].setTint(0x9a9a9a)
-            }
-            this.defChoiceSprites[i].disableInteractive()
-          }
+      })
+
+      if (player === this.game.player) {
+        this.undoButton.clearTint()
+        this.undoButton.setInteractive()
+
+        for (let i = 0; i < this.atkChoiceSprites.length; i++) {
+          this.atkChoiceSprites[i].disableInteractive()
+          this.defChoiceSprites[i].disableInteractive()
         }
       }
     })
 
-    this.readyButton = this.add.text(400, 380, '- Pronto -', this.thinTextFormat)
+    this.game.socket.on('delete-turn', (turn) => {
+      this.turn = { no: 0, isAttacker: false }
+      const [activeSprites, inactiveSprites] = turn.isAttacker ? [this.atkChoiceSprites, this.defChoiceSprites] : [this.defChoiceSprites, this.atkChoiceSprites]
+      const parallelSprites = turn.isAttacker ? this.defChoiceSprites : this.atkChoiceSprites
+
+      activeSprites.forEach((sprite, i) => {
+        if (sprite && i === turn.no - 1) {
+          sprite.clearTint().setInteractive()
+          inactiveSprites[i].clearTint().setInteractive()
+        }
+      })
+    })
+
+    this.confirmButton = this.add.text(400, 380, 'OK', this.thinTextFormat)
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
 
+      })
+
+    this.undoButton = this.add.sprite(400, 420, 'undo')
+      .setTint(0x9a9a9a)
+      .on('pointerdown', () => {
+        this.game.socket.emit('undo-turn', this.game.roomNo, this.turn)
+        this.undoButton.setTint(0x9a9a9a).disableInteractive()
       })
 
     this.game.socket.on('summon-unit', (card) => {
