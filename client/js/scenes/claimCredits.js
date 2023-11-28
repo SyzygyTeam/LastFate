@@ -13,44 +13,75 @@ export default class claimCredits extends Phaser.Scene {
     this.load.audio('back', '../../assets/roomLobby/back.mp3')
     this.load.audio('confirm', '../../assets/roomLobby/confirm.mp3')
 
+    this.load.image('door', '../../assets/mainMenu/door.png')
+
     settings.preloadElements(this)
   }
 
   create () {
+    /* Formatações de texto */
+    this.keyboardFormat = {
+      fontFamily: 'VT323',
+      fontSize: '70px',
+      resolution: 2,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
+    this.titleFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
+      resolution: 2,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
+    this.add.rectangle(400, 225, 800, 450, 0x222034, 50)
+    this.add.sprite(400, 225, 'door')
+
     this.backSound = this.sound.add('back')
     this.keySound = this.sound.add('key')
     this.confirmSound = this.sound.add('confirm')
+
+    this.add.text(400, 50, 'Resgate seus Tijolinhos', this.titleFormat)
+      .setOrigin(0.5, 0.5)
 
     this.posicao = ''
 
     this.usuarioTextoBase = 'Usuário: '
     this.usuarioDigitado = ''
-    this.usuario = this.add.text(450, 100, this.usuarioTextoBase, {
-      fontFamily: 'monospace',
-      font: '32px Courier',
-      fill: '#cccccc'
-    })
+    this.usuario = this.add.text(300, 100, this.usuarioTextoBase, this.keyboardFormat)
+      .setTint(0xd0d0d0)
       .setInteractive()
       .on('pointerdown', () => {
         this.posicao = 'usuário'
-        this.usuario.setFill('#ffffff')
-        this.senha.setFill('#cccccc')
+        this.usuario.clearTint()
+        this.senha.setTint(0xaaaaaa)
         this.voltar.x = 750
         this.voltar.y = this.usuario.y
       })
 
     this.senhaTextoBase = 'Senha: '
     this.senhaDigitada = ''
-    this.senha = this.add.text(450, 200, this.senhaTextoBase, {
-      fontFamily: 'monospace',
-      font: '32px Courier',
-      fill: '#cccccc'
-    })
+    this.senha = this.add.text(300, 200, this.senhaTextoBase, this.keyboardFormat)
+      .setTint(0xd0d0d0)
       .setInteractive()
       .on('pointerdown', () => {
         this.posicao = 'senha'
-        this.usuario.setFill('#cccccc')
-        this.senha.setFill('#ffffff')
+        this.usuario.setTint(0xaaaaaa)
+        this.senha.clearTint()
         this.voltar.x = 750
         this.voltar.y = this.senha.y
       })
@@ -58,11 +89,7 @@ export default class claimCredits extends Phaser.Scene {
     const teclado = [...Array(10).keys()]
     teclado.forEach(digito => {
       const valor = (digito + 1) % 10
-      this.add.text(80 * ((digito % 3) + 1), 80 * (Math.floor(digito / 3) + 1), valor, {
-        fontFamily: 'monospace',
-        font: '32px Courier',
-        fill: '#ffffff'
-      })
+      this.add.text(80 * ((digito % 3) + 1), 80 * (Math.floor(digito / 3) + 1), valor, this.keyboardFormat)
         .setInteractive()
         .on('pointerdown', () => {
           this.keySound.play()
@@ -82,11 +109,7 @@ export default class claimCredits extends Phaser.Scene {
             }
           }
           if (this.usuarioDigitado.length === 4 && this.senhaDigitada.length === 4) {
-            this.enviar = this.add.text(450, 300, '[ENVIAR]', {
-              fontFamily: 'monospace',
-              font: '64px Courier',
-              fill: '#ffffff'
-            })
+            this.enviar = this.add.text(450, 300, '[ENVIAR]', this.keyboardFormat)
               .setInteractive()
               .on('pointerdown', () => {
                 this.confirmSound.play()
@@ -96,11 +119,8 @@ export default class claimCredits extends Phaser.Scene {
         })
     })
 
-    this.voltar = this.add.text(800, 100, '<', {
-      fontFamily: 'monospace',
-      font: '32px Courier',
-      fill: '#ffffff'
-    })
+    this.voltar = this.add.text(800, 100, '<', this.keyboardFormat)
+      .setTint(0xff00000)
       .setInteractive()
       .on('pointerdown', () => {
         this.backSound.play()
