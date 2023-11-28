@@ -9,10 +9,18 @@ export default class claimCredits extends Phaser.Scene {
   }
 
   preload () {
+    this.load.audio('key', '../../assets/roomLobby/key.mp3')
+    this.load.audio('back', '../../assets/roomLobby/back.mp3')
+    this.load.audio('confirm', '../../assets/roomLobby/confirm.mp3')
+
     settings.preloadElements(this)
   }
 
   create () {
+    this.backSound = this.sound.add('back')
+    this.keySound = this.sound.add('key')
+    this.confirmSound = this.sound.add('confirm')
+
     this.posicao = ''
 
     this.usuarioTextoBase = 'Usuário: '
@@ -57,6 +65,7 @@ export default class claimCredits extends Phaser.Scene {
       })
         .setInteractive()
         .on('pointerdown', () => {
+          this.keySound.play()
           if (this.posicao === 'usuário') {
             if (this.usuarioDigitado.length < 4) {
               this.usuarioDigitado += valor
@@ -80,6 +89,7 @@ export default class claimCredits extends Phaser.Scene {
             })
               .setInteractive()
               .on('pointerdown', () => {
+                this.confirmSound.play()
                 this.serverInteraction()
               })
           }
@@ -93,6 +103,7 @@ export default class claimCredits extends Phaser.Scene {
     })
       .setInteractive()
       .on('pointerdown', () => {
+        this.backSound.play()
         if (this.posicao === 'usuário') {
           if (this.usuarioDigitado.length > 0) {
             this.usuarioDigitado = this.usuarioDigitado.slice(0, -1)

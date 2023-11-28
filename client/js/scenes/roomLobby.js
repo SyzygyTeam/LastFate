@@ -12,6 +12,11 @@ export default class roomLobby extends Phaser.Scene {
     this.load.image('bgPorta', '../../assets/roomLobby/bgPorta.png')
     this.load.image('createRoom', '../../assets/roomLobby/createRoom.png')
     this.load.image('enterRoom', '../../assets/roomLobby/enterRoom.png')
+
+    this.load.audio('key', '../../assets/roomLobby/key.mp3')
+    this.load.audio('back', '../../assets/roomLobby/back.mp3')
+    this.load.audio('confirm', '../../assets/roomLobby/confirm.mp3')
+
     settings.preloadElements(this)
   }
 
@@ -44,6 +49,10 @@ export default class roomLobby extends Phaser.Scene {
         fill: true
       }
     }
+
+    this.backSound = this.sound.add('back')
+    this.keySound = this.sound.add('key')
+    this.confirmSound = this.sound.add('confirm')
 
     this.add.image(400, 225, 'bgPorta')
     this.add.rectangle(400, 225, 800, 450, 0x050505, 60)
@@ -108,6 +117,7 @@ export default class roomLobby extends Phaser.Scene {
     })
       .setInteractive()
       .on('pointerdown', () => {
+        this.backSound.play()
         this.removeChar()
       })
       .setOrigin(0.5, 0)
@@ -148,6 +158,7 @@ export default class roomLobby extends Phaser.Scene {
     })
       .setInteractive()
       .on('pointerdown', () => {
+        this.confirmSound.play()
         this.confirm()
       })
       .setOrigin(0.5, 0)
@@ -157,6 +168,7 @@ export default class roomLobby extends Phaser.Scene {
     this.createRoom = this.add.sprite(400, 200, 'createRoom')
       .setInteractive()
       .on('pointerdown', () => {
+        this.confirmSound.play()
         this.game.player = 'p1'
         this.game.socket.emit('create-room')
       })
@@ -165,6 +177,7 @@ export default class roomLobby extends Phaser.Scene {
     this.enterRoom = this.add.sprite(400, 285, 'enterRoom')
       .setInteractive()
       .on('pointerdown', () => {
+        this.confirmSound.play()
         this.titleText.setText('Digite o código da sala')
         this.createRoom.setVisible(false)
         this.orText.setVisible(false)
@@ -194,6 +207,7 @@ export default class roomLobby extends Phaser.Scene {
         .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
+          this.keySound.play()
           this.press(i + 1)
         })
         .setVisible(false)
