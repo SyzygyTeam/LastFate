@@ -20,13 +20,13 @@ export default class battleMatch extends Phaser.Scene {
     this.load.spritesheet('spark', '../../assets/battleMatch/spark.png', { frameWidth: 32, frameHeight: 32 })
 
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
-    this.load.image('testSprite', '../../assets/cardsSprites/testSprite.png')
+    this.load.image('giganteLorde', '../../assets/cardsSprites/giganteLorde.png')
 
     settings.preloadElements(this)
   }
 
   create () {
-    /* Formatação de Texto */
+    /* Formatações de Texto */
     this.hugeTextFormat = {
       fontFamily: 'PressStart2P',
       fontSize: '30px',

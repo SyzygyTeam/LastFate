@@ -22,9 +22,9 @@ export default class roomLobby extends Phaser.Scene {
 
   create () {
     /* Formatações de texto */
-    this.keyboardFormat = {
-      fontFamily: 'VT323',
-      fontSize: '70px',
+    this.titleFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
       resolution: 2,
       fill: '#f9f9f9',
       stroke: '#050505',
@@ -36,9 +36,9 @@ export default class roomLobby extends Phaser.Scene {
       }
     }
 
-    this.titleFormat = {
-      fontFamily: 'PressStart2P',
-      fontSize: '23px',
+    this.keyboardFormat = {
+      fontFamily: 'VT323',
+      fontSize: '70px',
       resolution: 2,
       fill: '#f9f9f9',
       stroke: '#050505',
@@ -102,19 +102,8 @@ export default class roomLobby extends Phaser.Scene {
     /* Criação do Teclado Virtual */
     this.createKeyboard()
 
-    this.backspaceKey = this.add.text(340, 360, '<', {
-      fontFamily: 'VT323',
-      fontSize: '70px',
-      fill: '#f90505',
-      resolution: 2,
-      stroke: '#050505',
-      strokeThickness: 2,
-      shadow: {
-        offsetX: 4,
-        offsetY: 4,
-        fill: true
-      }
-    })
+    this.backspaceKey = this.add.text(340, 360, '<', this.keyboardFormat)
+      .setTint(0xf90505)
       .setInteractive()
       .on('pointerdown', () => {
         this.backSound.play()
@@ -123,19 +112,7 @@ export default class roomLobby extends Phaser.Scene {
       .setOrigin(0.5, 0)
       .setVisible(false)
 
-    this.zeroKey = this.add.text(400, 360, 0, {
-      fontFamily: 'VT323',
-      fontSize: '70px',
-      resolution: 2,
-      fill: '#f9f9f9',
-      stroke: '#050505',
-      strokeThickness: 2,
-      shadow: {
-        offsetX: 4,
-        offsetY: 4,
-        fill: true
-      }
-    })
+    this.zeroKey = this.add.text(400, 360, 0, this.keyboardFormat)
       .setInteractive()
       .on('pointerdown', () => {
         this.press(0)
@@ -143,19 +120,8 @@ export default class roomLobby extends Phaser.Scene {
       .setOrigin(0.5, 0)
       .setVisible(false)
 
-    this.okKey = this.add.text(460, 360, 'OK', {
-      fontFamily: 'VT323',
-      fontSize: '70px',
-      fill: '#05f905',
-      resolution: 2,
-      stroke: '#050505',
-      strokeThickness: 2,
-      shadow: {
-        offsetX: 4,
-        offsetY: 4,
-        fill: true
-      }
-    })
+    this.okKey = this.add.text(460, 360, 'OK', this.keyboardFormat)
+      .setTint(0x05f905)
       .setInteractive()
       .on('pointerdown', () => {
         this.confirmSound.play()

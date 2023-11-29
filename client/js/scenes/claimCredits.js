@@ -20,9 +20,9 @@ export default class claimCredits extends Phaser.Scene {
 
   create () {
     /* Formatações de texto */
-    this.keyboardFormat = {
-      fontFamily: 'VT323',
-      fontSize: '70px',
+    this.titleFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '23px',
       resolution: 2,
       fill: '#f9f9f9',
       stroke: '#050505',
@@ -34,9 +34,9 @@ export default class claimCredits extends Phaser.Scene {
       }
     }
 
-    this.titleFormat = {
-      fontFamily: 'PressStart2P',
-      fontSize: '23px',
+    this.keyboardFormat = {
+      fontFamily: 'VT323',
+      fontSize: '70px',
       resolution: 2,
       fill: '#f9f9f9',
       stroke: '#050505',

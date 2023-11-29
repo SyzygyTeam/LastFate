@@ -16,6 +16,7 @@ export default class logoEntry extends Phaser.Scene {
     this.add.image(400, 225, 'orgLogo')
       .setInteractive()
       .on('pointerdown', () => {
+        // TODO: Reverter esse fadeOut
         // this.bgColor.disableInteractive()
         // this.cameras.main.fadeOut(400, 0, 0, 0)
         // this.cameras.main.once('camerafadeoutcomplete', () => {

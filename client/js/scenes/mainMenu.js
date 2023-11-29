@@ -69,13 +69,15 @@ export default class mainMenu extends Phaser.Scene {
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        this.cameras.main.fadeOut(400, 0, 0, 0)
+        // TODO: Reverter esse fadeOut
+        this.cameras.main.fadeOut(100, 0, 0, 0)
         this.cameras.main.once('camerafadeoutcomplete', () => {
           this.playButton.disableInteractive()
           this.scene.start('roomLobby')
         })
       })
 
+    // TODO: Implementar (ou remover) essa tela de créditos
     this.creditsButton = this.add.sprite(50, 350, 'creditsButton')
       .setOrigin(0, 0)
       .setInteractive()

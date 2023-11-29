@@ -37,7 +37,7 @@ function displaySettings (scene) {
       })
     })
 
-  // TODO: Proceguir os menus
+  // TODO: Prosseguir os menus
   // const fullscreenTxt =
   // const fullscreenCheck =
 

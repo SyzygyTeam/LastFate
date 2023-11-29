@@ -157,11 +157,11 @@ io.on('connection', (socket) => {
 
 /* Função que gera valores 1000 ~ 9999 não-utilizados em salas */
 function rngRoom () {
-  // TODO: Restaurar essa função
+  // TODO: Restaurar essa função RNG
   // const min = 1000
   // const max = 9999
   // const rng = Math.floor(Math.random() * (max - min + 1) + min)
-  const rng = 1111
+  const rng = 9999
   // if (io.sockets.adapter.rooms.has(rng)) { this.rngRoom() }
   return rng
 }
