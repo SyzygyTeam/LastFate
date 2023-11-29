@@ -28,8 +28,8 @@ export default class Card extends Phaser.GameObjects.Container {
     this.sprite = cardInfo.path
     this.bgImg = this.scene.add.sprite(0, 0, 'cardBg')
     this.spriteImg = this.scene.add.sprite(0, -50, this.sprite)
-      .setScale(2)
     this.setSize(this.bgImg.width, this.bgImg.height)
+    this.equalizeScale()
 
     /* Efeito de Hover de Board */
     this.bgEffect = this.scene.add.rectangle(
@@ -154,6 +154,19 @@ export default class Card extends Phaser.GameObjects.Container {
 
       this.add(this.arrTxtElements[i])
     }
+  }
+
+  equalizeScale () {
+    const imageSize = this.spriteImg.width * this.spriteImg.height
+    const targetSize = 128 * 128 // Change this to the desired target size
+
+    const scale = Math.sqrt(targetSize / imageSize)
+    this.spriteImg.setScale(scale)
+
+    // If you want to maintain the aspect ratio, you can use the following code instead:
+    // const maxDimension = Math.max(spriteImg.width, spriteImg.height);
+    // const scale = targetSize / maxDimension;
+    // spriteImg.setScale(scale);
   }
 
   play () {
