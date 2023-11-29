@@ -1,6 +1,6 @@
 const giganteLorde = {
   name: 'Gigante Lorde',
-  path: 'testSprite',
+  path: 'giganteLorde',
   cost: 10,
   attack: 5,
   health: 12,
@@ -9,7 +9,7 @@ const giganteLorde = {
 
 const pequenoMago = {
   name: 'Pequeno Mago',
-  path: 'testSprite',
+  path: 'giganteLorde',
   cost: 4,
   attack: 3,
   health: 3,
@@ -18,7 +18,7 @@ const pequenoMago = {
 
 const bonecoDeTeste = {
   name: 'Boneco de Pano',
-  path: 'testSprite',
+  path: 'giganteLorde',
   cost: 0,
   attack: 4,
   health: 1,
