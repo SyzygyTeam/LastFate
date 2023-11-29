@@ -14,6 +14,7 @@ export default class mainMenu extends Phaser.Scene {
     this.load.image('door', '../../assets/mainMenu/door.png')
     this.load.image('fog', '../../assets/mainMenu/fog.png')
     this.load.image('filter', '../../assets/mainMenu/filter.png')
+    this.load.image('gameLogo', '../../assets/mainMenu/gameLogo.png')
 
     /* Buttons */
     this.load.image('playButton', '../../assets/mainMenu/playButton.png')
@@ -64,7 +65,7 @@ export default class mainMenu extends Phaser.Scene {
       }
     })
 
-    this.playButton = this.add.sprite(20, 300, 'playButton')
+    this.playButton = this.add.sprite(50, 300, 'playButton')
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
@@ -75,12 +76,14 @@ export default class mainMenu extends Phaser.Scene {
         })
       })
 
-    this.creditsButton = this.add.sprite(20, 350, 'creditsButton')
+    this.creditsButton = this.add.sprite(50, 350, 'creditsButton')
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
 
       })
+
+    this.gameLogo = this.add.sprite(120, 110, 'gameLogo')
 
     settings.displaySettings(this)
     this.cameras.main.fadeIn(1000)

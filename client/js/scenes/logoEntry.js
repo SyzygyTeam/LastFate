@@ -9,10 +9,11 @@ export default class logoEntry extends Phaser.Scene {
       'webfont',
       'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'
     )
+    this.load.image('orgLogo', '../assets/orgLogo.png')
   }
 
   create () {
-    this.bgColor = this.add.rectangle(400, 225, 800, 450, 0x222034, 50)
+    this.add.image(400, 225, 'orgLogo')
       .setInteractive()
       .on('pointerdown', () => {
         // this.bgColor.disableInteractive()
