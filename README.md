@@ -1,4 +1,13 @@
+
+<div align="justify">
+<div align="center">
+
+![LastFate](https://raw.githubusercontent.com/SyzygyTeam/LastFate/dev/client/assets/gameLogoGithub.png)
+
 # Last Fate, um cardgame roguelike
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/new/#github.com/STB-Games/The-Conundrum)
+</div>
 
 ### Sobre o projeto:
 
