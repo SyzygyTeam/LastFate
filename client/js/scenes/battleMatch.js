@@ -11,6 +11,56 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   preload () {
+    this.spritePaths = ['aFenix',
+      'ameacaVulcanica',
+      'anaoRobusto',
+      'anomaliaEspinhosa',
+      'arautoAnciao',
+      'arqueiroAeromante',
+      'arqueiroNovico',
+      'aSentença',
+      'barbaroErudito',
+      'basiliscoSombrio',
+      'bestaInfernal',
+      'cavaleiroErudito',
+      'cavaleiroRedimido',
+      'chamaViva',
+      'ciclope',
+      'colossoDeGelo',
+      'damaAudaciosa',
+      'dragaoAureo',
+      'dragaoNovico',
+      'dragaoPenumbra',
+      'dragaoTurquesa',
+      'elementalDeBarro',
+      'elfaProdigio',
+      'fadaGotaDagua',
+      'fagulha',
+      'feiticeiraAprendiz',
+      'felinoChicote',
+      'giganteLorde',
+      'golemDeMagma',
+      'grifoRastreador',
+      'guardiaoArvore',
+      'homemMorcego',
+      'ignicornio',
+      'komainu',
+      'licantropoOculto',
+      'minotauroCarmesim',
+      'observador',
+      'oExecutor',
+      'ogroAcogueiro',
+      'ogroMacico',
+      'pequenoBrotinho',
+      'puxaCovas',
+      'símioDasNeves',
+      'tribalRastreador',
+      'trollLiberto']
+
+    for (let i = 0; i < this.spritePaths.length; i++) {
+      this.load.image(this.spritePaths[i], `../../assets/cardsSprites/${this.spritePaths[i]}.png`)
+    }
+
     this.load.image('forest', '../../assets/battleMatch/forest.png')
     this.load.image('atk', '../../assets/battleMatch/atk.png')
     this.load.image('def', '../../assets/battleMatch/def.png')
@@ -230,8 +280,12 @@ export default class battleMatch extends Phaser.Scene {
         this.undoButton.setTint(0x9a9a9a).disableInteractive()
       })
 
+    this.board = []
+
     this.game.socket.on('summon-unit', (card) => {
-      this.add.sprite(card.x, card.y, card.sprite)
+      const sprite = this.add.sprite(card.x, card.y, card.sprite)
+      this.equalizeScale(sprite)
+      this.board.push(sprite)
     })
 
     this.game.socket.on('start-match', () => { this.startMatch() })
@@ -249,6 +303,7 @@ export default class battleMatch extends Phaser.Scene {
       }
     })
 
+    this.startMatch()
     settings.displaySettings(this)
   }
 
@@ -299,13 +354,21 @@ export default class battleMatch extends Phaser.Scene {
     this.game.socket.emit('start-match', this.game.roomNo)
     /* Criação dos Cards */
     this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
-    this.card2 = new Card(this, 400 * 1.5, 440, cardList.pequenoMago)
-    this.card3 = new Card(this, 400 / 2, 440, cardList.bonecoDeTeste)
+    this.card2 = new Card(this, 400 * 1.5, 440, cardList.guardiaoArvore)
+    this.card3 = new Card(this, 400 / 2, 440, cardList.komainu)
   }
 
   playCard (cardInfo, card) {
     this.game.socket.emit('play-card', this.game.roomNo, cardInfo)
     card.setVisible(false)
+  }
+
+  equalizeScale (spriteImg) {
+    const imageSize = spriteImg.width * spriteImg.height
+    const targetSize = 128 * 128
+
+    const scale = Math.sqrt(targetSize / imageSize)
+    spriteImg.setScale(scale)
   }
 
   update (time, delta) { }

@@ -55,13 +55,13 @@ export default class Card extends Phaser.GameObjects.Container {
     /* Texto de Título e Descrição */
     this.nameTxt = this.scene.add.text(
       20,
-      -157,
+      -165,
       cardInfo.name,
       {
         resolution: 8,
-        fontFamily: 'PressStart2P',
+        fontFamily: 'VT323',
         fill: '#050505',
-        fontSize: '15px'
+        fontSize: '30px'
       }
     )
       .setOrigin(0.5, 0)
@@ -104,6 +104,7 @@ export default class Card extends Phaser.GameObjects.Container {
     })
 
     this.on('pointerup', () => {
+      this.scene.whiteVignette.setVisible(false)
       this.effectCounter.paused = true
       if (this.y < 300) {
         this.play()
@@ -158,15 +159,10 @@ export default class Card extends Phaser.GameObjects.Container {
 
   equalizeScale () {
     const imageSize = this.spriteImg.width * this.spriteImg.height
-    const targetSize = 128 * 128 // Change this to the desired target size
+    const targetSize = 128 * 128
 
     const scale = Math.sqrt(targetSize / imageSize)
     this.spriteImg.setScale(scale)
-
-    // If you want to maintain the aspect ratio, you can use the following code instead:
-    // const maxDimension = Math.max(spriteImg.width, spriteImg.height);
-    // const scale = targetSize / maxDimension;
-    // spriteImg.setScale(scale);
   }
 
   play () {

@@ -7,22 +7,22 @@ const giganteLorde = {
   description: 'Atacar: Eu ganho Poder igual ao Poder total de todos os aliados.'
 }
 
-const pequenoMago = {
-  name: 'Pequeno Mago',
-  path: 'giganteLorde',
+const guardiaoArvore = {
+  name: 'Guardião Árvore',
+  path: 'guardiaoArvore',
   cost: 4,
   attack: 3,
   health: 3,
   description: ''
 }
 
-const bonecoDeTeste = {
-  name: 'Boneco de Pano',
-  path: 'giganteLorde',
+const komainu = {
+  name: 'Komainu',
+  path: 'komainu',
   cost: 0,
   attack: 4,
   health: 1,
   description: 'Imóvel.'
 }
 
-export { giganteLorde, pequenoMago, bonecoDeTeste }
+export { giganteLorde, guardiaoArvore, komainu }
