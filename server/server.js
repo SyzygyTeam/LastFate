@@ -41,16 +41,20 @@ io.on('connection', (socket) => {
       units: []
     }
 
+    const matchTurns = {}
+
+    const ready = [false, false]
+
     const roomData = {
       players,
       npc,
       allyField,
-      enemyField
+      enemyField,
+      matchTurns,
+      ready
     }
 
     roomsData.set(room, roomData)
-
-    console.log('>', roomsData)
 
     io.to(socket.id).emit('enter-room-ok', { no: room })
     io.to(room).emit('players', players)
@@ -67,13 +71,10 @@ io.on('connection', (socket) => {
       socket.join(room)
       console.log(`User ${socket.id} has entered the room ${room}.`)
 
-      const [p1] = io.sockets.adapter.rooms.get(room)
-      const players = {
-        p1,
-        p2: {
-          id: socket.id,
-          turn: { no: 0, isAttacker: false }
-        }
+      const players = roomsData.get(room).players
+      players.p2 = {
+        id: socket.id,
+        turn: { no: 0, isAttacker: false }
       }
 
       roomsData.get(room).players = players
@@ -90,8 +91,17 @@ io.on('connection', (socket) => {
     io.to(room).emit('room-status-reply', playerStatus)
   })
 
-  socket.on('publish-state', (room, state) => {
-    socket.to(room).emit('notification-state', state)
+  socket.on('publish-state', (room, player) => {
+    const roomData = roomsData.get(room)
+    if (player === 'p1') {
+      roomsData.get(room).ready[0] = true
+    }
+    if (player === 'p2') { roomsData.get(room).ready[1] = true }
+
+    io.to(room).emit('notify-state', roomData.ready)
+    if (roomData.ready[0] && roomData.ready[1]) {
+      io.to(room).emit('start-match')
+    }
   })
 
   /* VOIP */
@@ -142,16 +152,16 @@ io.on('connection', (socket) => {
 
   socket.on('occupy-turn', (room, player, turn) => {
     const roomData = roomsData.get(room)
-    const isTurnOccupied = Object.values(roomData.players).some(p => p.turn === turn)
 
-    if (!isTurnOccupied) {
-      roomData.players[player].turn = turn
-      io.to(room).emit('notify-turn', player, turn)
-    }
+    roomData.players[player].turn = turn
+    io.to(room).emit('notify-turn', roomData.players)
   })
 
-  socket.on('undo-turn', (room, turn) => {
-    io.to(room).emit('delete-turn', turn)
+  socket.on('undo-turn', (room, player) => {
+    const roomData = roomsData.get(room)
+
+    roomData.players[player].turn = { no: 0, isAttacker: false }
+    io.to(room).emit('notify-turn', roomData.players)
   })
 })
 
