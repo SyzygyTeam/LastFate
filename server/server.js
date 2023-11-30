@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
       units: []
     }
 
-    const matchTurns = {}
+    const matchTurns = [0, 0, 0]
 
     const ready = [false, false]
 
@@ -98,7 +98,16 @@ io.on('connection', (socket) => {
 
     io.to(room).emit('notify-state', roomData.ready)
     if (roomData.ready[0] && roomData.ready[1]) {
-      io.to(room).emit('start-match')
+      for (let i = 0; i < 3; i++) {
+        if (roomData.players.p1.turn.no === i + 1) {
+          roomData.matchTurns[i] = 'p1'
+        } else if (roomData.players.p2.turn.no === i + 1) {
+          roomData.matchTurns[i] = 'p2'
+        } else {
+          roomData.matchTurns[i] = 'npc'
+        }
+      }
+      io.to(room).emit('start-match', roomData.matchTurns[0])
       roomData.ready = [false, false]
     }
   })

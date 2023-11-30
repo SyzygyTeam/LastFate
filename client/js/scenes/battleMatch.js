@@ -248,7 +248,7 @@ export default class battleMatch extends Phaser.Scene {
         .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          this.game.socket.emit('occupy-turn', this.game.roomNo, i + 1)
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, i + 1)
         })
 
       this.turnNumberText[i] = this.add.text(200 * i + 200, 225, i + 1, this.hugeTextFormat)
@@ -339,8 +339,9 @@ export default class battleMatch extends Phaser.Scene {
         this.game.socket.emit('undo-turn', this.game.roomNo, this.game.player)
         this.undoButton.setTint(0x9a9a9a).disableInteractive()
       })
-    this.game.socket.on('start-match', () => {
+    this.game.socket.on('start-match', (firstTurn) => {
       this.confirmButton.setVisible(false)
+      this.turn = firstTurn
       this.startMatch()
     })
   }

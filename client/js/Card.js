@@ -104,7 +104,7 @@ export default class Card extends Phaser.GameObjects.Container {
     })
 
     this.on('pointerup', () => {
-      this.scene.whiteVignette.setVisible(false)
+      this.scene.vignette.setVisible(false)
       this.effectCounter.paused = true
       if (this.y < 300) {
         this.play()
