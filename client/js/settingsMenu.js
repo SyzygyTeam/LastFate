@@ -26,7 +26,7 @@ function displaySettings (scene) {
       }
     })
 
-  const closeSettings = scene.add.sprite(535, 85, 'close')
+  const closeSettings = scene.add.sprite(520, 70, 'close')
     .setVisible(false)
     .setInteractive()
     .on('pointerdown', () => {
