@@ -93,14 +93,13 @@ io.on('connection', (socket) => {
 
   socket.on('publish-state', (room, player) => {
     const roomData = roomsData.get(room)
-    if (player === 'p1') {
-      roomsData.get(room).ready[0] = true
-    }
+    if (player === 'p1') { roomsData.get(room).ready[0] = true }
     if (player === 'p2') { roomsData.get(room).ready[1] = true }
 
     io.to(room).emit('notify-state', roomData.ready)
     if (roomData.ready[0] && roomData.ready[1]) {
       io.to(room).emit('start-match')
+      roomData.ready = [false, false]
     }
   })
 

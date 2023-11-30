@@ -339,7 +339,10 @@ export default class battleMatch extends Phaser.Scene {
         this.game.socket.emit('undo-turn', this.game.roomNo, this.game.player)
         this.undoButton.setTint(0x9a9a9a).disableInteractive()
       })
-    this.game.socket.on('start-match', () => { this.startMatch() })
+    this.game.socket.on('start-match', () => {
+      this.confirmButton.setVisible(false)
+      this.startMatch()
+    })
   }
 
   startMatch () {
@@ -374,8 +377,6 @@ export default class battleMatch extends Phaser.Scene {
       }
     })
 
-    this.game.socket.emit('start-turn', this.game.roomNo)
-
     /* Criação dos Cards */
     this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
     this.card2 = new Card(this, 400 * 1.5, 440, cardList.guardiaoArvore)
@@ -393,6 +394,19 @@ export default class battleMatch extends Phaser.Scene {
         text.destroy()
       })
     }
+  }
+
+  defeat () {
+    this.darkBG.setVisible(true)
+    this.add.text(400, 225, 'Derrota', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setTint(0x9a0505)
+    this.add.text(400, 300, '- Voltar ao Menu -', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.scene.start('mainMenu')
+      })
   }
 
   equalizeScale (spriteImg) {
