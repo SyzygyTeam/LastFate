@@ -14,6 +14,7 @@ export default class mainMenu extends Phaser.Scene {
     this.load.image('door', '../../assets/mainMenu/door.png')
     this.load.image('fog', '../../assets/mainMenu/fog.png')
     this.load.image('filter', '../../assets/mainMenu/filter.png')
+    this.load.image('vignette', '../../assets/vignette.png')
     this.load.image('gameLogo', '../../assets/mainMenu/gameLogo.png')
 
     /* Buttons */
@@ -35,11 +36,12 @@ export default class mainMenu extends Phaser.Scene {
     this.sky = this.add.sprite(400, 225, 'sky')
     this.cloud = this.add.sprite(900, 50, 'cloud')
       .setAlpha(0.5)
-    this.mountains = this.add.sprite(400, 225, 'mountains')
-    this.door = this.add.sprite(400, 225, 'door')
+    this.add.sprite(400, 225, 'mountains')
+    this.add.sprite(400, 225, 'door')
     this.fog = this.add.sprite(400, 420, 'fog')
       .setAlpha(0.5)
-    this.filter = this.add.sprite(400, 225, 'filter')
+    this.add.sprite(400, 225, 'filter')
+    this.add.sprite(400, 225, 'vignette').setTint(0x000000)
 
     this.skyMoviment = this.tweens.addCounter({
       from: 225,
