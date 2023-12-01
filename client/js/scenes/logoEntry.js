@@ -13,15 +13,14 @@ export default class logoEntry extends Phaser.Scene {
   }
 
   create () {
-    this.add.image(400, 225, 'orgLogo')
+    this.logo = this.add.image(400, 225, 'orgLogo')
       .setInteractive()
       .on('pointerdown', () => {
-        // TODO: Reverter esse fadeOut
-        // this.bgColor.disableInteractive()
-        // this.cameras.main.fadeOut(400, 0, 0, 0)
-        // this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('mainMenu')
-        // })
+        this.logo.disableInteractive()
+        this.cameras.main.fadeOut(300, 0, 0, 0)
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.scene.start('mainMenu')
+        })
       })
 
     /* global WebFont */

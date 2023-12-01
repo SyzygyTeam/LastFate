@@ -481,10 +481,10 @@ export default class battleMatch extends Phaser.Scene {
       const spriteX = (Math.ceil(this.board.length / 2) * sideFactor * 130) + 400
       const atkText = this.add.text(spriteX - 50, 350, card.attack, this.thinTextFormat)
         .setOrigin(0.5)
-        .setTint(0xba0000)
+        .setTint(0xf9f905)
       const defText = this.add.text(spriteX + 50, 350, card.health, this.thinTextFormat)
         .setOrigin(0.5)
-        .setTint(0x05ba05)
+        .setTint(0xea0505)
 
       const sprite = this.add.sprite(spriteX, 300, card.sprite)
         .on('pointerdown', () => {
@@ -557,7 +557,6 @@ export default class battleMatch extends Phaser.Scene {
 
     /* Arrastar carta */
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-      this.children.bringToTop(gameObject)
       gameObject.x = dragX
       gameObject.y = dragY - 70
       if (gameObject.y < 300 && this.turn === this.game.player) {
@@ -592,6 +591,10 @@ export default class battleMatch extends Phaser.Scene {
         this.buttonText.setText('Atacar').setOrigin(0.5)
         this.button.on('pointerdown', () => {
           this.isAttacking = true
+          this.button.disableInteractive()
+          this.time.delayedCall(2000, () => {
+            this.button.setInteractive()
+          })
           this.buttonText.setText('Confirmar').setOrigin(0.5)
           this.button.on('pointerdown', () => {
             this.game.socket.emit('player-attack', this.game.roomNo, this.troupsAttacking)
@@ -599,9 +602,6 @@ export default class battleMatch extends Phaser.Scene {
           for (let i = 0; i < this.board.length; i++) {
             this.board[i].setInteractive()
           }
-          this.time.delayedCall(2000, () => {
-            this.button.setInteractive()
-          })
         })
       } else {
         this.buttonText.setText('Passar').setOrigin(0.5)

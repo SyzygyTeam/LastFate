@@ -71,10 +71,9 @@ export default class mainMenu extends Phaser.Scene {
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        // TODO: Reverter esse fadeOut
+        this.playButton.disableInteractive()
         this.cameras.main.fadeOut(100, 0, 0, 0)
         this.cameras.main.once('camerafadeoutcomplete', () => {
-          this.playButton.disableInteractive()
           this.scene.start('roomLobby')
         })
       })

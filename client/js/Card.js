@@ -98,6 +98,7 @@ export default class Card extends Phaser.GameObjects.Container {
     /* Interatividade */
     this.setInteractive()
     this.on('pointerdown', () => {
+      this.scene.children.bringToTop(this)
       this.setScale(1)
       this.y -= 70
       this.effectCounter.paused = false

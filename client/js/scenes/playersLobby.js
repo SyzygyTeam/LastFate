@@ -83,8 +83,7 @@ export default class playersLobby extends Phaser.Scene {
         this.countdownText = this.add.text(400, 400, '- 5 -', this.hugeTextFormat)
           .setOrigin(0.5, 0.5)
 
-        // TODO: Reverter o countdown para 5
-        let countdown = 1
+        let countdown = 5
         const countdownInterval = setInterval(() => {
           countdown--
           this.countdownText.setText(`- ${countdown} -`)

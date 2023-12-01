@@ -172,9 +172,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('players-ready', (room, npcDeck) => {
-    // const npcChoice = Math.floor(Math.random() * 3)
-    // TODO: Implementar a escolha do NPC
-    const npcChoice = 0
+    const npcChoice = Math.floor(Math.random() * 3)
     roomsData.get(room).npc.deck = npcDeck
     roomsData.get(room).npc.turn = npcChoice
     io.to(room).emit('npc-choice', npcChoice)
@@ -197,12 +195,10 @@ io.on('connection', (socket) => {
 
 /* Função que gera valores 1000 ~ 9999 não-utilizados em salas */
 function rngRoom () {
-  // TODO: Restaurar essa função RNG
-  // const min = 1000
-  // const max = 9999
-  // const rng = Math.floor(Math.random() * (max - min + 1) + min)
-  const rng = 9999
-  // if (io.sockets.adapter.rooms.has(rng)) { this.rngRoom() }
+  const min = 1000
+  const max = 9999
+  const rng = Math.floor(Math.random() * (max - min + 1) + min)
+  if (io.sockets.adapter.rooms.has(rng)) { this.rngRoom() }
   return rng
 }
 
