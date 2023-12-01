@@ -127,7 +127,10 @@ export default class Card extends Phaser.GameObjects.Container {
 
     this.sendInfo = {
       sprite: this.sprite,
-      name: this.nameTxt
+      name: this.nameTxt,
+      cost: this.cost,
+      attack: this.attack,
+      health: this.health
     }
   }
 

@@ -51,7 +51,6 @@ const precacheResources = [
   './assets/cardsSprites/ciclope.png',
   './assets/cardsSprites/colossoDeGelo.png',
   './assets/cardsSprites/damaAudaciosa.png',
-  './assets/cardsSprites/dragaoAureo.png',
   './assets/cardsSprites/dragaoNovico.png',
   './assets/cardsSprites/dragaoPenumbra.png',
   './assets/cardsSprites/dragaoTurquesa.png',

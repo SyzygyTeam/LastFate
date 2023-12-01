@@ -56,18 +56,10 @@ io.on('connection', (socket) => {
       turn: 0,
       deck: [],
       name: 'NPC',
-      health: 100
+      health: 20
     }
 
-    const allyField = {
-      size: 0,
-      units: []
-    }
-
-    const enemyField = {
-      size: 0,
-      units: []
-    }
+    const enemyField = []
 
     const matchTurns = [0, 0, 0]
 
@@ -78,7 +70,6 @@ io.on('connection', (socket) => {
     const roomData = {
       players,
       npc,
-      allyField,
       enemyField,
       matchIndex,
       matchTurns,
@@ -141,6 +132,7 @@ io.on('connection', (socket) => {
       io.to(room).emit('start-match', roomData.matchTurns[0], roomData.players.p1.isAttacker)
       if (roomData.matchTurns[0] === 'npc') {
         const npcChoice = Math.floor(Math.random() * 10)
+        roomData.enemyField.push(roomData.npc.deck[npcChoice])
         io.to(room).emit('npc-play', roomData.npc.deck[npcChoice])
         roomData.matchIndex++
         io.to(room).emit('next-turn', roomData.matchTurns[roomData.matchIndex])
@@ -149,12 +141,27 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('publish-attacker', (room, attackers) => {
+    const roomData = roomsData.get(room)
+    for (let i = 0; i < attackers.length; i++) {
+      roomData.npc.health -= attackers[i].attack
+    }
+    io.to(room).emit('notify-npc-health', roomData.npc.health)
+  })
+
   socket.on('pass-turn', (room) => {
     const roomData = roomsData.get(room)
     roomData.matchIndex++
-    if (roomData.matchTurns[0] === 'npc') {
-      const npcChoice = Math.floor(Math.random() * 10)
-      io.to(room).emit('npc-play', roomData.npc.deck[npcChoice])
+    if (roomData.matchIndex === 3) {
+      roomData.matchIndex = 0
+    }
+    if (roomData.matchTurns[roomData.matchIndex] === 'npc') {
+      if (roomData.enemyField.length < 4) {
+        const npcChoice = Math.floor(Math.random() * 10)
+        roomData.enemyField.push(roomData.npc.deck[npcChoice])
+        io.to(room).emit('npc-play', roomData.npc.deck[npcChoice])
+      }
+      roomData.matchIndex++
     }
     io.to(room).emit('next-turn', roomData.matchTurns[roomData.matchIndex])
   })

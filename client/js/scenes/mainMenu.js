@@ -19,7 +19,7 @@ export default class mainMenu extends Phaser.Scene {
 
     /* Buttons */
     this.load.image('playButton', '../../assets/mainMenu/playButton.png')
-    this.load.image('creditsButton', '../../assets/mainMenu/creditsButton.png')
+    // this.load.image('creditsButton', '../../assets/mainMenu/creditsButton.png')
 
     /* SoundTrack */
     this.load.audio('mainST', '../../assets/mainMenu/mainST.mp3')
@@ -67,7 +67,7 @@ export default class mainMenu extends Phaser.Scene {
       }
     })
 
-    this.playButton = this.add.sprite(50, 300, 'playButton')
+    this.playButton = this.add.sprite(50, 350, 'playButton')
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
@@ -79,14 +79,14 @@ export default class mainMenu extends Phaser.Scene {
         })
       })
 
-    // TODO: Implementar (ou remover) essa tela de créditos
+    /*
     this.creditsButton = this.add.sprite(50, 350, 'creditsButton')
       .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
 
       })
-
+    */
     this.gameLogo = this.add.sprite(120, 110, 'gameLogo')
 
     settings.displaySettings(this)

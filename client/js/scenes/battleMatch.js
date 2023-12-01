@@ -28,7 +28,6 @@ export default class battleMatch extends Phaser.Scene {
       'ciclope',
       'colossoDeGelo',
       'damaAudaciosa',
-      'dragaoAureo',
       'dragaoNovico',
       'dragaoPenumbra',
       'dragaoTurquesa',
@@ -158,8 +157,7 @@ export default class battleMatch extends Phaser.Scene {
         cardList.elfaProdigio,
         cardList.cavaleiroRedimido,
         cardList.colossoDeGelo,
-        cardList.damaAudaciosa,
-        cardList.dragaoAureo
+        cardList.damaAudaciosa
       ]
     }
 
@@ -307,14 +305,14 @@ export default class battleMatch extends Phaser.Scene {
     this.p1Sprite = this.add.sprite(70, 370, 'p1')
     this.p2Sprite = this.add.sprite(730, 370, 'p2')
 
-    this.p1Txt = this.add.text(235, 370, 'Jogador 1', this.thinTextFormat).setOrigin(0.5)
-    this.p2Txt = this.add.text(565, 370, 'Jogador 2', this.thinTextFormat).setOrigin(0.5)
+    this.p1Text = this.add.text(235, 370, 'Jogador 1', this.thinTextFormat).setOrigin(0.5)
+    this.p2Text = this.add.text(565, 370, 'Jogador 2', this.thinTextFormat).setOrigin(0.5)
 
-    const blueTxtStr = this.game.player === 'p1' ? 'Você' : 'Sua dupla'
-    const redTxtStr = this.game.player === 'p1' ? 'Sua dupla' : 'Você'
+    const blueTextStr = this.game.player === 'p1' ? 'Você' : 'Sua dupla'
+    const redTextStr = this.game.player === 'p1' ? 'Sua dupla' : 'Você'
 
-    this.blueTxt = this.add.text(235, 410, blueTxtStr, this.thinTextFormat).setOrigin(0.5)
-    this.redTxt = this.add.text(565, 410, redTxtStr, this.thinTextFormat).setOrigin(0.5)
+    this.blueText = this.add.text(235, 410, blueTextStr, this.thinTextFormat).setOrigin(0.5)
+    this.redText = this.add.text(565, 410, redTextStr, this.thinTextFormat).setOrigin(0.5)
 
     /* Título da seleção de turnos */
     this.titleText = this.add.text(400, 70, 'Selecionem seus turnos', this.hugeTextFormat)
@@ -431,21 +429,26 @@ export default class battleMatch extends Phaser.Scene {
   startMatch () {
     this.hand = []
     this.board = []
+    this.boardTexts = []
     this.enemyBoard = []
-    this.alreadyAttacked = false
+    this.enemyBoardTexts = []
+    this.troupsAttacking = []
+    this.isAttacking = false
     this.isBeingAttacked = false
 
-    this.outHP = 20
+    this.ourHP = 20
     this.oppHP = 20
+    this.myManaCap = 1
+    this.mymana = this.myManaCap
 
     this.darkBG.setVisible(false)
     this.titleText.setVisible(false)
 
-    this.p1Txt.setVisible(false)
-    this.p2Txt.setVisible(false)
+    this.p1Text.setVisible(false)
+    this.p2Text.setVisible(false)
 
-    this.blueTxt.setVisible(false)
-    this.redTxt.setVisible(false)
+    this.blueText.setVisible(false)
+    this.redText.setVisible(false)
 
     if (this.game.player === 'p1') {
       this.button = this.add.sprite(720, 225, 'buttonP1')
@@ -454,8 +457,6 @@ export default class battleMatch extends Phaser.Scene {
       this.button = this.add.sprite(720, 225, 'buttonP2')
         .setInteractive()
     }
-
-    this.buttonText = this.add.text(720, 225, '', this.buttonTextFormat)
 
     for (let i = 0; i < 3; i++) {
       this.turnChoiceSprites[i].setVisible(false)
@@ -466,30 +467,45 @@ export default class battleMatch extends Phaser.Scene {
 
     this.game.socket.on('next-turn', (turn) => {
       this.turn = turn
+      if (this.game.player === this.turn) {
+        this.myManaCap++
+        this.mymana = this.myManaCap
+        // this.manaText.setText(`Mana:${this.mymana}`)
+        this.drawCard()
+      }
       this.seeForActions()
     })
 
     this.game.socket.on('summon-ally-troup', (card) => {
       const sideFactor = this.board.length % 2 === 0 ? -1 : 1
       const spriteX = (Math.ceil(this.board.length / 2) * sideFactor * 130) + 400
+      const atkText = this.add.text(spriteX - 50, 350, card.attack, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0xba0000)
+      const defText = this.add.text(spriteX + 50, 350, card.health, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0x05ba05)
 
       const sprite = this.add.sprite(spriteX, 300, card.sprite)
         .on('pointerdown', () => {
           let clicked
           if (clicked) {
-            sprite.setScale(1).clearTint()
+            sprite.clearTint()
             clicked = false
-          } else { sprite.setTint(0x9a0505) }
+          } else if (this.isAttacking) { sprite.setTint(0x9a0505) }
         })
       this.equalizeScale(sprite)
+
+      this.boardTexts.push([atkText, defText])
       this.board.push(sprite)
-      this.children.bringToTop(this.p1Sprite)
-      this.children.bringToTop(this.p2Sprite)
+
       this.children.bringToTop(this.button)
       this.children.bringToTop(this.buttonText)
       for (let i = 0; i < this.hand.length; i++) {
         this.children.bringToTop(this.hand[i])
       }
+      this.children.bringToTop(this.ourHpText)
+      this.children.bringToTop(this.oppHP)
       this.seeForActions()
     })
 
@@ -498,8 +514,15 @@ export default class battleMatch extends Phaser.Scene {
       const spriteX = (Math.ceil(this.enemyBoard.length / 2) * sideFactor * 130) + 400
 
       const sprite = this.add.sprite(spriteX, 70, card.path)
+      const atkText = this.add.text(spriteX - 50, 90, card.attack, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0xba0000)
+      const defText = this.add.text(spriteX + 50, 90, card.health, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0x05ba05)
       this.equalizeScale(sprite)
       this.enemyBoard.push(sprite)
+      this.enemyBoardTexts.push([atkText, defText])
       this.children.bringToTop(this.p1Sprite)
       this.children.bringToTop(this.p2Sprite)
       this.children.bringToTop(this.button)
@@ -512,6 +535,16 @@ export default class battleMatch extends Phaser.Scene {
     this.game.socket.on('npc-attack', (card) => {
       this.isBeingAttacked = true
       this.seeForActions()
+    })
+
+    this.game.socket.on('npc-block', (card) => {
+      this.isAttacking = false
+      this.seeForActions()
+    })
+
+    this.game.socket.on('notify-npc-health', (hp) => {
+      this.oppHP = hp
+      this.oppHpText.setText(`HP:${this.oppHP}`)
     })
 
     this.game.socket.on('win', () => {
@@ -537,51 +570,54 @@ export default class battleMatch extends Phaser.Scene {
     })
 
     /* Criação dos Cards */
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       this.drawCard()
     }
+
+    this.buttonText = this.add.text(720, 225, '', this.buttonTextFormat)
+    this.ourHpText = this.add.text(10, 10, `HP:${this.ourHP}`, this.hugeTextFormat).setTint(0x9a0505)
+    this.oppHpText = this.add.text(10, 200, `HP:${this.oppHP}`, this.hugeTextFormat)
+    // this.manaText = this.add.text(10, 230, `Mana:${this.myManaCap}`, this.hugeTextFormat)
 
     this.seeForActions()
   }
 
   seeForActions () {
-    if (this.isBeingAttacked) {
-      this.buttonText.setText('Defender').setOrigin(0.5)
-    } else if (this.turn !== this.game.player) {
-      this.buttonText.setText('Aguar-\ndando').setOrigin(0.5)
+    if (this.turn !== this.game.player) {
+      this.buttonText.setText('Aguarde').setOrigin(0.5)
       this.button.setTint(0x9a9a9a).disableInteractive()
     } else {
       this.button.clearTint().setInteractive()
-      if (this.myRole === 'atk' && !this.alreadyAttacked && this.board.length > 0) {
+      if (this.myRole === 'atk' && !this.isAttacking && this.board.length > 0) {
         this.buttonText.setText('Atacar').setOrigin(0.5)
         this.button.on('pointerdown', () => {
-          this.alreadyAttacked = true
-          this.button.clearTint().setInteractive()
+          this.isAttacking = true
           this.buttonText.setText('Confirmar').setOrigin(0.5)
-          this.game.socket.emit('end-turn', this.game.roomNo, this.game.player)
           this.button.on('pointerdown', () => {
-            this.seeForActions()
+            this.game.socket.emit('player-attack', this.game.roomNo, this.troupsAttacking)
           })
           for (let i = 0; i < this.board.length; i++) {
             this.board[i].setInteractive()
           }
+          this.time.delayedCall(2000, () => {
+            this.button.setInteractive()
+          })
         })
       } else {
         this.buttonText.setText('Passar').setOrigin(0.5)
         this.button.on('pointerdown', () => {
-          this.game.socket.emit('end-turn', this.game.roomNo, this.game.player)
-          this.button.clearTint().setInteractive()
-          this.buttonText.setText('Aguarde').setOrigin(0.5)
-          this.alreadyAttacked = false
           this.game.socket.emit('pass-turn', this.game.roomNo)
+          this.button.clearTint().disableInteractive()
+          this.buttonText.setText('Aguarde').setOrigin(0.5)
+          this.isAttacking = false
         })
       }
     }
   }
 
   playCard (cardInfo, card) {
-    if (this.board.length > 6) {
-      const fullBoardText = this.add.text(400, 225, 'Limite de cartas no campo atingido', this.hugeTextFormat)
+    if (this.board.length > 4) {
+      const fullBoardText = this.add.text(400, 225, 'Limite atingido', this.hugeTextFormat)
         .setOrigin(0.5)
       this.time.delayedCall(2000, () => {
         fullBoardText.destroy()

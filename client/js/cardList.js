@@ -151,15 +151,6 @@ const damaAudaciosa = {
   description: 'Jogar: Aliados ganham +1/+1.'
 }
 
-const dragaoAureo = {
-  name: 'Dragão Áureo',
-  path: 'dagaoAureo',
-  cost: 8,
-  attack: 7,
-  health: 6,
-  description: 'Atacar: Aliados ganham +3/+3.'
-}
-
 const dragaoNovico = {
   name: 'Dragão Noviço',
   path: 'dragaoNovico',
@@ -403,7 +394,6 @@ export {
   ciclope,
   colossoDeGelo,
   damaAudaciosa,
-  dragaoAureo,
   dragaoNovico,
   dragaoPenumbra,
   dragaoTurquesa,
