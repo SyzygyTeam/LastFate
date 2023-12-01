@@ -18,7 +18,7 @@ export default class battleMatch extends Phaser.Scene {
       'arautoAnciao',
       'arqueiroAeromante',
       'arqueiroNovico',
-      'aSentença',
+      'aSentenca',
       'barbaroErudito',
       'basiliscoSombrio',
       'bestaInfernal',
@@ -53,7 +53,7 @@ export default class battleMatch extends Phaser.Scene {
       'ogroMacico',
       'pequenoBrotinho',
       'puxaCovas',
-      'símioDasNeves',
+      'simioDasNeves',
       'tribalRastreador',
       'trollLiberto']
 
@@ -67,15 +67,38 @@ export default class battleMatch extends Phaser.Scene {
     this.load.image('def', '../../assets/battleMatch/def.png')
     this.load.image('frame', '../../assets/battleMatch/frame.png')
     this.load.image('undo', '../../assets/battleMatch/undo.png')
+    this.load.image('p1', '../../assets/battleMatch/p1.png')
+    this.load.image('p2', '../../assets/battleMatch/p2.png')
+    this.load.image('buttonP1', '../../assets/battleMatch/buttonP1.png')
+    this.load.image('buttonP2', '../../assets/battleMatch/buttonP2.png')
     this.load.spritesheet('spark', '../../assets/battleMatch/spark.png', { frameWidth: 32, frameHeight: 32 })
 
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
     this.load.image('giganteLorde', '../../assets/cardsSprites/giganteLorde.png')
 
+    this.load.audio('battleStartST', '../../assets/battleMatch/battleStartST.mp3')
+    this.load.audio('battleST', '../../assets/battleMatch/battleST.mp3')
+    this.load.audio('winST', '../../assets/battleMatch/winST.mp3')
+    this.load.audio('defeatST', '../../assets/battleMatch/defeatST.mp3')
+
     settings.preloadElements(this)
   }
 
   create () {
+    /* Músicas */
+    this.sound.stopByKey('mainST')
+    this.battleST = this.sound.add('battleST')
+    this.battleST.loop = true
+    this.battleStartST = this.sound.add('battleStartST')
+      .on('complete', () => { this.battleST.play() })
+    this.winST = this.sound.add('winST')
+    this.defeatST = this.sound.add('defeatST')
+
+    this.winST.loop = true
+    this.defeatST.loop = true
+
+    this.battleStartST.play()
+
     /* Formatações de Texto */
     this.hugeTextFormat = {
       fontFamily: 'PressStart2P',
@@ -105,10 +128,58 @@ export default class battleMatch extends Phaser.Scene {
       }
     }
 
+    this.buttonTextFormat = {
+      fontFamily: 'VT323',
+      fontSize: '20px',
+      resolution: 0.7,
+      fill: '#f9f9f9'
+    }
+
+    if (this.game.player === 'p1') {
+      this.myDeck = [
+        cardList.ameacaVulcanica,
+        cardList.arqueiroAeromante,
+        cardList.chamaViva,
+        cardList.aSentenca,
+        cardList.dragaoNovico,
+        cardList.fagulha,
+        cardList.grifoRastreador,
+        cardList.golemDeMagma,
+        cardList.puxaCovas,
+        cardList.cavaleiroErudito
+      ]
+    } else {
+      this.myDeck = [
+        cardList.arautoAnciao,
+        cardList.tribalRastreador,
+        cardList.pequenoBrotinho,
+        cardList.observador,
+        cardList.grifoRastreador,
+        cardList.elfaProdigio,
+        cardList.cavaleiroRedimido,
+        cardList.colossoDeGelo,
+        cardList.damaAudaciosa,
+        cardList.dragaoAureo
+      ]
+    }
+
+    const x = [
+      cardList.anaoRobusto,
+      cardList.barbaroErudito,
+      cardList.cavaleiroErudito,
+      cardList.ciclope,
+      cardList.ignicornio,
+      cardList.komainu,
+      cardList.ogroAcogueiro,
+      cardList.ogroMacico,
+      cardList.simioDasNeves,
+      cardList.trollLiberto
+    ]
+
     /* VOIP P2 */
     if (this.game.player === 'p2') {
       this.runVoip()
-      this.game.socket.emit('players-ready', this.game.roomNo)
+      this.game.socket.emit('players-ready', this.game.roomNo, x)
     }
 
     this.game.socket.on('offer', (description) => {
@@ -233,6 +304,18 @@ export default class battleMatch extends Phaser.Scene {
     this.darkBG = this.add.rectangle(400, 225, 800, 450, 0x000000)
       .setAlpha(0.5)
 
+    this.p1Sprite = this.add.sprite(70, 370, 'p1')
+    this.p2Sprite = this.add.sprite(730, 370, 'p2')
+
+    this.p1Txt = this.add.text(235, 370, 'Jogador 1', this.thinTextFormat).setOrigin(0.5)
+    this.p2Txt = this.add.text(565, 370, 'Jogador 2', this.thinTextFormat).setOrigin(0.5)
+
+    const blueTxtStr = this.game.player === 'p1' ? 'Você' : 'Sua dupla'
+    const redTxtStr = this.game.player === 'p1' ? 'Sua dupla' : 'Você'
+
+    this.blueTxt = this.add.text(235, 410, blueTxtStr, this.thinTextFormat).setOrigin(0.5)
+    this.redTxt = this.add.text(565, 410, redTxtStr, this.thinTextFormat).setOrigin(0.5)
+
     /* Título da seleção de turnos */
     this.titleText = this.add.text(400, 70, 'Selecionem seus turnos', this.hugeTextFormat)
       .setOrigin(0.5)
@@ -246,10 +329,6 @@ export default class battleMatch extends Phaser.Scene {
     for (let i = 0; i < 3; i++) {
       this.turnChoiceSprites[i] = this.add.sprite(200 * i + 200, 225, 'frame')
         .setScale(2)
-        .setInteractive()
-        .on('pointerdown', () => {
-          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, i + 1)
-        })
 
       this.turnNumberText[i] = this.add.text(200 * i + 200, 225, i + 1, this.hugeTextFormat)
         .setOrigin(0.5)
@@ -258,15 +337,15 @@ export default class battleMatch extends Phaser.Scene {
         .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          this.turn = { no: i + 1, isAttacker: true }
-          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, this.turn)
+          const turn = { no: i + 1, isAttacker: true }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, turn)
         })
       this.defChoiceSprites[i] = this.add.sprite(200 * i + 200, 300, 'def')
         .setScale(2)
         .setInteractive()
         .on('pointerdown', () => {
-          this.turn = { no: i + 1, isAttacker: false }
-          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, this.turn)
+          const turn = { no: i + 1, isAttacker: false }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, turn)
         })
     }
 
@@ -274,14 +353,14 @@ export default class battleMatch extends Phaser.Scene {
     this.game.socket.on('npc-choice', (choice) => {
       this.atkChoiceSprites[choice].setVisible(false)
       this.defChoiceSprites[choice].setVisible(false)
-      this.turnChoiceSprites[choice].setTint(0x9a0505)
+      this.turnChoiceSprites[choice].setTint(0x9a9a9a)
       this.turnNumberText[choice].setTint(0xddddaa)
     })
 
     /* Atualiza os ícones */
     this.game.socket.on('notify-turn', (turn) => {
       const players = [turn.p1, turn.p2]
-      const colors = [0x9a0505, 0x05059a]
+      const colors = [0x05059a, 0x9a0505]
       const playerString = ['p1', 'p2']
 
       for (let i = 0; i < 3; i++) {
@@ -305,6 +384,7 @@ export default class battleMatch extends Phaser.Scene {
             this.defChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(0x9a9a9a)
             if (playerString[i] === this.game.player) {
               this.undoButton.clearTint().setInteractive()
+              this.myRole = players[i].turn.isAttacker ? 'atk' : 'def'
             }
           } else {
             for (let j = 0; j < 3; j++) {
@@ -314,6 +394,7 @@ export default class battleMatch extends Phaser.Scene {
             this.atkChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(0x9a9a9a)
             if (playerString[i] === this.game.player) {
               this.undoButton.clearTint().setInteractive()
+              this.myRole = players[i].turn.isAttacker ? 'atk' : 'def'
             }
           }
         }
@@ -339,7 +420,8 @@ export default class battleMatch extends Phaser.Scene {
         this.game.socket.emit('undo-turn', this.game.roomNo, this.game.player)
         this.undoButton.setTint(0x9a9a9a).disableInteractive()
       })
-    this.game.socket.on('start-match', (firstTurn) => {
+
+    this.game.socket.on('start-match', (firstTurn, p1Role) => {
       this.confirmButton.setVisible(false)
       this.turn = firstTurn
       this.startMatch()
@@ -347,8 +429,33 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   startMatch () {
+    this.hand = []
+    this.board = []
+    this.enemyBoard = []
+    this.alreadyAttacked = false
+    this.isBeingAttacked = false
+
+    this.outHP = 20
+    this.oppHP = 20
+
     this.darkBG.setVisible(false)
     this.titleText.setVisible(false)
+
+    this.p1Txt.setVisible(false)
+    this.p2Txt.setVisible(false)
+
+    this.blueTxt.setVisible(false)
+    this.redTxt.setVisible(false)
+
+    if (this.game.player === 'p1') {
+      this.button = this.add.sprite(720, 225, 'buttonP1')
+        .setInteractive()
+    } else {
+      this.button = this.add.sprite(720, 225, 'buttonP2')
+        .setInteractive()
+    }
+
+    this.buttonText = this.add.text(720, 225, '', this.buttonTextFormat)
 
     for (let i = 0; i < 3; i++) {
       this.turnChoiceSprites[i].setVisible(false)
@@ -357,16 +464,67 @@ export default class battleMatch extends Phaser.Scene {
       this.defChoiceSprites[i].setVisible(false)
     }
 
-    this.board = []
+    this.game.socket.on('next-turn', (turn) => {
+      this.turn = turn
+      this.seeForActions()
+    })
 
-    this.game.socket.on('summon-unit', (card) => {
-      const sprite = this.add.sprite(card.x, card.y, card.sprite)
+    this.game.socket.on('summon-ally-troup', (card) => {
+      const sideFactor = this.board.length % 2 === 0 ? -1 : 1
+      const spriteX = (Math.ceil(this.board.length / 2) * sideFactor * 130) + 400
+
+      const sprite = this.add.sprite(spriteX, 300, card.sprite)
+        .on('pointerdown', () => {
+          let clicked
+          if (clicked) {
+            sprite.setScale(1).clearTint()
+            clicked = false
+          } else { sprite.setTint(0x9a0505) }
+        })
       this.equalizeScale(sprite)
       this.board.push(sprite)
+      this.children.bringToTop(this.p1Sprite)
+      this.children.bringToTop(this.p2Sprite)
+      this.children.bringToTop(this.button)
+      this.children.bringToTop(this.buttonText)
+      for (let i = 0; i < this.hand.length; i++) {
+        this.children.bringToTop(this.hand[i])
+      }
+      this.seeForActions()
+    })
+
+    this.game.socket.on('npc-play', (card) => {
+      const sideFactor = this.enemyBoard.length % 2 === 0 ? -1 : 1
+      const spriteX = (Math.ceil(this.enemyBoard.length / 2) * sideFactor * 130) + 400
+
+      const sprite = this.add.sprite(spriteX, 70, card.path)
+      this.equalizeScale(sprite)
+      this.enemyBoard.push(sprite)
+      this.children.bringToTop(this.p1Sprite)
+      this.children.bringToTop(this.p2Sprite)
+      this.children.bringToTop(this.button)
+      this.children.bringToTop(this.buttonText)
+      for (let i = 0; i < this.hand.length; i++) {
+        this.children.bringToTop(this.hand[i])
+      }
+    })
+
+    this.game.socket.on('npc-attack', (card) => {
+      this.isBeingAttacked = true
+      this.seeForActions()
+    })
+
+    this.game.socket.on('win', () => {
+      this.win()
+    })
+
+    this.game.socket.on('defeat', () => {
+      this.defeat()
     })
 
     /* Arrastar carta */
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+      this.children.bringToTop(gameObject)
       gameObject.x = dragX
       gameObject.y = dragY - 70
       if (gameObject.y < 300 && this.turn === this.game.player) {
@@ -379,15 +537,64 @@ export default class battleMatch extends Phaser.Scene {
     })
 
     /* Criação dos Cards */
-    this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
-    this.card2 = new Card(this, 400 * 1.5, 440, cardList.guardiaoArvore)
-    this.card3 = new Card(this, 400 / 2, 440, cardList.komainu)
+    for (let i = 0; i < 4; i++) {
+      this.drawCard()
+    }
+
+    this.seeForActions()
+  }
+
+  seeForActions () {
+    if (this.isBeingAttacked) {
+      this.buttonText.setText('Defender').setOrigin(0.5)
+    } else if (this.turn !== this.game.player) {
+      this.buttonText.setText('Aguar-\ndando').setOrigin(0.5)
+      this.button.setTint(0x9a9a9a).disableInteractive()
+    } else {
+      this.button.clearTint().setInteractive()
+      if (this.myRole === 'atk' && !this.alreadyAttacked && this.board.length > 0) {
+        this.buttonText.setText('Atacar').setOrigin(0.5)
+        this.button.on('pointerdown', () => {
+          this.alreadyAttacked = true
+          this.button.clearTint().setInteractive()
+          this.buttonText.setText('Confirmar').setOrigin(0.5)
+          this.game.socket.emit('end-turn', this.game.roomNo, this.game.player)
+          this.button.on('pointerdown', () => {
+            this.seeForActions()
+          })
+          for (let i = 0; i < this.board.length; i++) {
+            this.board[i].setInteractive()
+          }
+        })
+      } else {
+        this.buttonText.setText('Passar').setOrigin(0.5)
+        this.button.on('pointerdown', () => {
+          this.game.socket.emit('end-turn', this.game.roomNo, this.game.player)
+          this.button.clearTint().setInteractive()
+          this.buttonText.setText('Aguarde').setOrigin(0.5)
+          this.alreadyAttacked = false
+          this.game.socket.emit('pass-turn', this.game.roomNo)
+        })
+      }
+    }
   }
 
   playCard (cardInfo, card) {
-    if (this.turn === this.game.player) {
+    if (this.board.length > 6) {
+      const fullBoardText = this.add.text(400, 225, 'Limite de cartas no campo atingido', this.hugeTextFormat)
+        .setOrigin(0.5)
+      this.time.delayedCall(2000, () => {
+        fullBoardText.destroy()
+      })
+    } else if (this.turn === this.game.player) {
       this.game.socket.emit('play-card', this.game.roomNo, cardInfo)
       card.setVisible(false)
+    } else if (this.isBeingAttacked) {
+      const text = this.add.text(400, 225, 'Não durante um ataque', this.hugeTextFormat)
+        .setOrigin(0.5)
+      this.time.delayedCall(2000, () => {
+        text.destroy()
+      })
     } else {
       const text = this.add.text(400, 225, 'Não é sua vez', this.hugeTextFormat)
         .setOrigin(0.5)
@@ -397,7 +604,26 @@ export default class battleMatch extends Phaser.Scene {
     }
   }
 
+  drawCard () {
+    if (this.hand.length > 5) { return }
+    const rng = Math.floor(Math.random() * this.myDeck.length)
+    const sideFactor = this.hand.length % 2 === 0 ? -1 : 1
+    const cardX = (Math.ceil(this.hand.length / 2) * sideFactor * 130) + 400
+    this.hand.push(new Card(this, cardX, 440, this.myDeck[rng]))
+  }
+
+  equalizeScale (spriteImg) {
+    const imageSize = spriteImg.width * spriteImg.height
+    const targetSize = 128 * 128
+
+    const scale = Math.sqrt(targetSize / imageSize)
+    spriteImg.setScale(scale)
+  }
+
   defeat () {
+    this.sound.stopByKey('battleST')
+    this.defeatST.play()
+
     this.darkBG.setVisible(true)
     this.add.text(400, 225, 'Derrota', this.hugeTextFormat)
       .setOrigin(0.5)
@@ -410,12 +636,20 @@ export default class battleMatch extends Phaser.Scene {
       })
   }
 
-  equalizeScale (spriteImg) {
-    const imageSize = spriteImg.width * spriteImg.height
-    const targetSize = 128 * 128
+  win () {
+    this.sound.stopByKey('battleST')
+    this.winST.play()
 
-    const scale = Math.sqrt(targetSize / imageSize)
-    spriteImg.setScale(scale)
+    this.darkBG.setVisible(true)
+    this.add.text(400, 225, 'Vitória!', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setTint(0x9a0505)
+    this.add.text(400, 300, '- Continuar -', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.scene.start('mainMenu')
+      })
   }
 
   update (time, delta) { }

@@ -10,6 +10,34 @@ const roomsData = new Map()
 io.on('connection', (socket) => {
   console.log(`User ${socket.id} has connected.`)
 
+  /* Ao tentar desconectar */
+  socket.on('disconnecting', (reason) => {
+    for (const room of socket.rooms) {
+      if (room !== socket.id) {
+        /* Atualiza a qntdd de player na Sala */
+        socket.to(room).emit('room-status-reply', 1)
+      }
+    }
+  })
+
+  /* Ao desconectar */
+  socket.on('disconnect', () => {
+    console.log(`User ${socket.id} has disconnected.`)
+  })
+
+  /* VOIP */
+  socket.on('offer', (room, description) => {
+    socket.to(room).emit('offer', description)
+  })
+
+  socket.on('candidate', (room, candidate) => {
+    socket.to(room).emit('candidate', candidate)
+  })
+
+  socket.on('answer', (room, description) => {
+    socket.to(room).emit('answer', description)
+  })
+
   /* Ao tentar criar uma sala aleatória */
   socket.on('create-room', () => {
     const room = rngRoom() // Gera um código de sala aleatório
@@ -43,6 +71,8 @@ io.on('connection', (socket) => {
 
     const matchTurns = [0, 0, 0]
 
+    const matchIndex = 0
+
     const ready = [false, false]
 
     const roomData = {
@@ -50,6 +80,7 @@ io.on('connection', (socket) => {
       npc,
       allyField,
       enemyField,
+      matchIndex,
       matchTurns,
       ready
     }
@@ -107,53 +138,37 @@ io.on('connection', (socket) => {
           roomData.matchTurns[i] = 'npc'
         }
       }
-      io.to(room).emit('start-match', roomData.matchTurns[0])
+      io.to(room).emit('start-match', roomData.matchTurns[0], roomData.players.p1.isAttacker)
+      if (roomData.matchTurns[0] === 'npc') {
+        const npcChoice = Math.floor(Math.random() * 10)
+        io.to(room).emit('npc-play', roomData.npc.deck[npcChoice])
+        roomData.matchIndex++
+        io.to(room).emit('next-turn', roomData.matchTurns[roomData.matchIndex])
+      }
       roomData.ready = [false, false]
     }
   })
 
-  /* VOIP */
-  socket.on('offer', (room, description) => {
-    socket.to(room).emit('offer', description)
-  })
-
-  socket.on('candidate', (room, candidate) => {
-    socket.to(room).emit('candidate', candidate)
-  })
-
-  socket.on('answer', (room, description) => {
-    socket.to(room).emit('answer', description)
-  })
-
-  /* Ao tentar desconectar */
-  socket.on('disconnecting', (reason) => {
-    for (const room of socket.rooms) {
-      if (room !== socket.id) {
-        /* Atualiza a qntdd de player na Sala */
-        socket.to(room).emit('room-status-reply', 1)
-      }
+  socket.on('pass-turn', (room) => {
+    const roomData = roomsData.get(room)
+    roomData.matchIndex++
+    if (roomData.matchTurns[0] === 'npc') {
+      const npcChoice = Math.floor(Math.random() * 10)
+      io.to(room).emit('npc-play', roomData.npc.deck[npcChoice])
     }
-  })
-
-  /* Ao desconectar */
-  socket.on('disconnect', () => {
-    console.log(`User ${socket.id} has disconnected.`)
-  })
-
-  /* Ao tentar atualizar o deck do player */
-  socket.on('publish-deck', (room, deck) => {
-    socket.to(room).emit('notify-deck', deck)
+    io.to(room).emit('next-turn', roomData.matchTurns[roomData.matchIndex])
   })
 
   /* Ao tentar jogar uma carta */
   socket.on('play-card', (room, cardObject) => {
-    cardObject.x = 400
-    cardObject.y = 225
-    io.to(room).emit('summon-unit', cardObject)
+    io.to(room).emit('summon-ally-troup', cardObject)
   })
 
-  socket.on('players-ready', (room) => {
-    const npcChoice = Math.floor(Math.random() * 3)
+  socket.on('players-ready', (room, npcDeck) => {
+    // const npcChoice = Math.floor(Math.random() * 3)
+    // TODO: Implementar a escolha do NPC
+    const npcChoice = 0
+    roomsData.get(room).npc.deck = npcDeck
     roomsData.get(room).npc.turn = npcChoice
     io.to(room).emit('npc-choice', npcChoice)
   })
