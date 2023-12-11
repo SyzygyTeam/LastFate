@@ -1,8 +1,5 @@
 import * as settings from '../settingsMenu.js'
 
-/* Cena de menu principal */
-/* Fontes precisam serem carregadas aqui p/ funcionarem em cenas posteriores */
-
 /* global Phaser */
 export default class mainMenu extends Phaser.Scene {
   constructor () {
@@ -10,57 +7,89 @@ export default class mainMenu extends Phaser.Scene {
   }
 
   preload () {
-    /* VOIP P1 */
-    if (this.game.player === 'p1') {
-      navigator.mediaDevices
-        .getUserMedia({ video: false, audio: true })
-        .then((stream) => {
-          console.log(stream)
-          this.game.midias = stream
-        })
-        .catch((error) => console.log(error))
-    }
+    /* Images */
+    this.load.image('sky', '../../assets/mainMenu/sky.png')
+    this.load.image('cloud', '../../assets/mainMenu/cloud.png')
+    this.load.image('mountains', '../../assets/mainMenu/mountains.png')
+    this.load.image('door', '../../assets/mainMenu/door.png')
+    this.load.image('fog', '../../assets/mainMenu/fog.png')
+    this.load.image('filter', '../../assets/mainMenu/filter.png')
+    this.load.image('vignette', '../../assets/vignette.png')
+    this.load.image('gameLogo', '../../assets/mainMenu/gameLogo.png')
 
-    this.load.script(
-      'webfont',
-      'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js'
-    )
-    this.load.image('forest', '../../assets/battleBg/forest.png')
+    /* Buttons */
+    this.load.image('playButton', '../../assets/mainMenu/playButton.png')
+    // this.load.image('creditsButton', '../../assets/mainMenu/creditsButton.png')
+
+    /* SoundTrack */
+    this.load.audio('mainST', '../../assets/mainMenu/mainST.mp3')
 
     settings.preloadElements(this)
   }
 
   create () {
-    /* Mensagens */
-    this.game.socket.on('room-status-reply', (playerStatus) => {
-      this.playerStatus = playerStatus
-      /* Checa se já há texto de status na tela */
-      if (this.statusMessage) {
-        this.statusRoomNo.destroy()
-        this.statusMessage.destroy()
+    this.mainST = this.sound.add('mainST')
+    this.mainST.loop = true
+    this.mainST.play()
+    this.mainST.setVolume(0.5)
+
+    this.sky = this.add.sprite(400, 225, 'sky')
+    this.cloud = this.add.sprite(900, 50, 'cloud')
+      .setAlpha(0.5)
+    this.add.sprite(400, 225, 'mountains')
+    this.add.sprite(400, 225, 'door')
+    this.fog = this.add.sprite(400, 420, 'fog')
+      .setAlpha(0.5)
+    this.add.sprite(400, 225, 'filter')
+    this.add.sprite(400, 225, 'vignette').setTint(0x000000)
+
+    this.skyMoviment = this.tweens.addCounter({
+      from: 225,
+      to: 215,
+      duration: 4500,
+      yoyo: true,
+      loop: -1,
+      onUpdate: (tween) => {
+        const y = tween.getValue()
+        this.sky.setPosition(400, y)
       }
-      /* Adiciona o status na tela */
-      this.statusRoomNo = this.add.text(20, 20, `Sua sala: ${this.game.roomNo}`)
-      this.statusMessage = this.add.text(20, 40, `Jogadores: ${this.playerStatus} / 2`)
     })
 
-    this.game.socket.emit('room-status-request', this.game.roomNo)
-
-    /* global WebFont */
-    WebFont.load({
-      custom: {
-        families: ['PressStart2P'],
-        urls: ['../main.css']
+    this.cloudMoviment = this.tweens.addCounter({
+      from: 900,
+      to: -300,
+      duration: 100000,
+      yoyo: false,
+      loop: -1,
+      onUpdate: (tween) => {
+        const x = tween.getValue()
+        this.cloud.setPosition(x, 50)
       }
     })
 
-    this.add.sprite(400, 225, 'forest')
+    this.playButton = this.add.sprite(50, 350, 'playButton')
+      .setOrigin(0, 0)
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.start('battleMatch')
+        this.playButton.disableInteractive()
+        this.cameras.main.fadeOut(100, 0, 0, 0)
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+          this.scene.start('roomLobby')
+        })
       })
 
+    /*
+    this.creditsButton = this.add.sprite(50, 350, 'creditsButton')
+      .setOrigin(0, 0)
+      .setInteractive()
+      .on('pointerdown', () => {
+
+      })
+    */
+    this.gameLogo = this.add.sprite(120, 110, 'gameLogo')
+
     settings.displaySettings(this)
+    this.cameras.main.fadeIn(1000)
   }
 
   update (time, delta) { }

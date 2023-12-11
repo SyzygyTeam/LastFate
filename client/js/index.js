@@ -1,6 +1,8 @@
 import config from './config.js'
-import roomLobby from './scenes/roomLobby.js'
+import logoEntry from './scenes/logoEntry.js'
 import mainMenu from './scenes/mainMenu.js'
+import roomLobby from './scenes/roomLobby.js'
+import playersLobby from './scenes/playersLobby.js'
 import battleMatch from './scenes/battleMatch.js'
 import claimCredits from './scenes/claimCredits.js'
 
@@ -10,7 +12,7 @@ class Game extends Phaser.Game {
     super(config)
 
     /* Funções de crédito */
-    this.id = 1 // Nº do jogo (indentificação)
+    this.id = 5 // Nº do jogo (indentificação)
     this.value = 100 // 'Valor' padrão do crédito
 
     /* Conexão do User c/ o Socket */
@@ -44,13 +46,15 @@ class Game extends Phaser.Game {
     this.audio = document.querySelector('audio')
 
     /* Todas as cenas */
-    this.scene.add('roomLobby', roomLobby)
+    this.scene.add('logoEntry', logoEntry)
     this.scene.add('mainMenu', mainMenu)
+    this.scene.add('roomLobby', roomLobby)
+    this.scene.add('playersLobby', playersLobby)
     this.scene.add('battleMatch', battleMatch)
     this.scene.add('claimCredits', claimCredits)
 
     /* Cena de início */
-    this.scene.start('roomLobby')
+    this.scene.start('logoEntry')
   }
 }
 

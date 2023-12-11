@@ -11,7 +11,6 @@ export default class Card extends Phaser.GameObjects.Container {
     this.scene = scene
 
     /* Definição de valores p/ criação de txt */
-    /* null é de caráter provisório */
     this.costTxt = null
     this.attackTxt = null
     this.healthTxt = null
@@ -26,10 +25,11 @@ export default class Card extends Phaser.GameObjects.Container {
     this.arrPosElements = [this.costPos, this.attackPos, this.healthPos]
 
     /* Sprites */
+    this.sprite = cardInfo.path
     this.bgImg = this.scene.add.sprite(0, 0, 'cardBg')
-    this.spriteImg = this.scene.add.sprite(0, -50, cardInfo.path)
-      .setScale(2)
+    this.spriteImg = this.scene.add.sprite(0, -50, this.sprite)
     this.setSize(this.bgImg.width, this.bgImg.height)
+    this.equalizeScale()
 
     /* Efeito de Hover de Board */
     this.bgEffect = this.scene.add.rectangle(
@@ -43,7 +43,7 @@ export default class Card extends Phaser.GameObjects.Container {
     this.effectCounter = this.scene.tweens.addCounter({
       from: 0.2,
       to: 0.8,
-      duration: 400,
+      duration: 500,
       yoyo: true,
       loop: -1,
       onUpdate: (tween) => {
@@ -55,13 +55,13 @@ export default class Card extends Phaser.GameObjects.Container {
     /* Texto de Título e Descrição */
     this.nameTxt = this.scene.add.text(
       20,
-      -157,
+      -165,
       cardInfo.name,
       {
         resolution: 8,
-        fontFamily: 'PressStart2P',
-        color: '#050505',
-        fontSize: '15px'
+        fontFamily: 'VT323',
+        fill: '#050505',
+        fontSize: '30px'
       }
     )
       .setOrigin(0.5, 0)
@@ -74,7 +74,7 @@ export default class Card extends Phaser.GameObjects.Container {
         fontFamily: 'PressStart2P',
         fontSize: '15px',
         resolution: 8,
-        color: '#050505',
+        fill: '#050505',
         align: 'center',
         wordWrap: {
           width: 250,
@@ -98,12 +98,14 @@ export default class Card extends Phaser.GameObjects.Container {
     /* Interatividade */
     this.setInteractive()
     this.on('pointerdown', () => {
+      this.scene.children.bringToTop(this)
       this.setScale(1)
       this.y -= 70
       this.effectCounter.paused = false
     })
 
     this.on('pointerup', () => {
+      this.scene.vignette.setVisible(false)
       this.effectCounter.paused = true
       if (this.y < 300) {
         this.play()
@@ -123,6 +125,14 @@ export default class Card extends Phaser.GameObjects.Container {
     this.attack = cardInfo.attack
     this.health = cardInfo.health
     this.description = cardInfo.description
+
+    this.sendInfo = {
+      sprite: this.sprite,
+      name: this.nameTxt,
+      cost: this.cost,
+      attack: this.attack,
+      health: this.health
+    }
   }
 
   generateTxtValues () {
@@ -136,7 +146,7 @@ export default class Card extends Phaser.GameObjects.Container {
           fontFamily: 'PressStart2P',
           fontSize: '20px',
           resolution: 2,
-          color: '#FAFAFA',
+          fill: '#f9f9f9',
           stroke: '#050505',
           strokeThickness: 2,
           shadow: {
@@ -151,7 +161,15 @@ export default class Card extends Phaser.GameObjects.Container {
     }
   }
 
+  equalizeScale () {
+    const imageSize = this.spriteImg.width * this.spriteImg.height
+    const targetSize = 128 * 128
+
+    const scale = Math.sqrt(targetSize / imageSize)
+    this.spriteImg.setScale(scale)
+  }
+
   play () {
-    this.setVisible(false)
+    this.scene.playCard(this.sendInfo, this)
   }
 }

@@ -11,56 +11,173 @@ export default class battleMatch extends Phaser.Scene {
   }
 
   preload () {
-    this.load.image('forest', '../../assets/battleBg/forest.png')
+    this.spritePaths = ['aFenix',
+      'ameacaVulcanica',
+      'anaoRobusto',
+      'anomaliaEspinhosa',
+      'arautoAnciao',
+      'arqueiroAeromante',
+      'arqueiroNovico',
+      'aSentenca',
+      'barbaroErudito',
+      'basiliscoSombrio',
+      'bestaInfernal',
+      'cavaleiroErudito',
+      'cavaleiroRedimido',
+      'chamaViva',
+      'ciclope',
+      'colossoDeGelo',
+      'damaAudaciosa',
+      'dragaoNovico',
+      'dragaoPenumbra',
+      'dragaoTurquesa',
+      'elementalDeBarro',
+      'elfaProdigio',
+      'fadaGotaDagua',
+      'fagulha',
+      'feiticeiraAprendiz',
+      'felinoChicote',
+      'giganteLorde',
+      'golemDeMagma',
+      'grifoRastreador',
+      'guardiaoArvore',
+      'homemMorcego',
+      'ignicornio',
+      'komainu',
+      'licantropoOculto',
+      'minotauroCarmesim',
+      'observador',
+      'oExecutor',
+      'ogroAcogueiro',
+      'ogroMacico',
+      'pequenoBrotinho',
+      'puxaCovas',
+      'simioDasNeves',
+      'tribalRastreador',
+      'trollLiberto']
+
+    for (let i = 0; i < this.spritePaths.length; i++) {
+      this.load.image(this.spritePaths[i], `../../assets/cardsSprites/${this.spritePaths[i]}.png`)
+    }
+
+    this.load.image('vignette', '../../assets/vignette.png')
+    this.load.image('forest', '../../assets/battleMatch/forest.png')
+    this.load.image('atk', '../../assets/battleMatch/atk.png')
+    this.load.image('def', '../../assets/battleMatch/def.png')
+    this.load.image('frame', '../../assets/battleMatch/frame.png')
+    this.load.image('undo', '../../assets/battleMatch/undo.png')
+    this.load.image('p1', '../../assets/battleMatch/p1.png')
+    this.load.image('p2', '../../assets/battleMatch/p2.png')
+    this.load.image('buttonP1', '../../assets/battleMatch/buttonP1.png')
+    this.load.image('buttonP2', '../../assets/battleMatch/buttonP2.png')
+    this.load.spritesheet('spark', '../../assets/battleMatch/spark.png', { frameWidth: 32, frameHeight: 32 })
+
     this.load.image('cardBg', '../../assets/cardsBg/white.png')
-    this.load.image('testSprite', '../../assets/cardsSprites/testSprite.png')
+    this.load.image('giganteLorde', '../../assets/cardsSprites/giganteLorde.png')
+
+    this.load.audio('battleStartST', '../../assets/battleMatch/battleStartST.mp3')
+    this.load.audio('battleST', '../../assets/battleMatch/battleST.mp3')
+    this.load.audio('winST', '../../assets/battleMatch/winST.mp3')
+    this.load.audio('defeatST', '../../assets/battleMatch/defeatST.mp3')
 
     settings.preloadElements(this)
   }
 
   create () {
+    /* Músicas */
+    this.sound.stopByKey('mainST')
+    this.battleST = this.sound.add('battleST')
+    this.battleST.loop = true
+    this.battleStartST = this.sound.add('battleStartST')
+      .on('complete', () => { this.battleST.play() })
+    this.winST = this.sound.add('winST')
+    this.defeatST = this.sound.add('defeatST')
+
+    this.winST.loop = true
+    this.defeatST.loop = true
+
+    this.battleStartST.play()
+
+    /* Formatações de Texto */
+    this.hugeTextFormat = {
+      fontFamily: 'PressStart2P',
+      fontSize: '30px',
+      resolution: 0.7,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
+    this.thinTextFormat = {
+      fontFamily: 'VT323',
+      fontSize: '50px',
+      resolution: 0.7,
+      fill: '#f9f9f9',
+      stroke: '#050505',
+      strokeThickness: 2,
+      shadow: {
+        offsetX: 4,
+        offsetY: 4,
+        fill: true
+      }
+    }
+
+    this.buttonTextFormat = {
+      fontFamily: 'VT323',
+      fontSize: '20px',
+      resolution: 0.7,
+      fill: '#f9f9f9'
+    }
+
+    if (this.game.player === 'p1') {
+      this.myDeck = [
+        cardList.ameacaVulcanica,
+        cardList.arqueiroAeromante,
+        cardList.chamaViva,
+        cardList.aSentenca,
+        cardList.dragaoNovico,
+        cardList.fagulha,
+        cardList.grifoRastreador,
+        cardList.golemDeMagma,
+        cardList.puxaCovas,
+        cardList.cavaleiroErudito
+      ]
+    } else {
+      this.myDeck = [
+        cardList.arautoAnciao,
+        cardList.tribalRastreador,
+        cardList.pequenoBrotinho,
+        cardList.observador,
+        cardList.grifoRastreador,
+        cardList.elfaProdigio,
+        cardList.cavaleiroRedimido,
+        cardList.colossoDeGelo,
+        cardList.damaAudaciosa
+      ]
+    }
+
+    const x = [
+      cardList.anaoRobusto,
+      cardList.barbaroErudito,
+      cardList.cavaleiroErudito,
+      cardList.ciclope,
+      cardList.ignicornio,
+      cardList.komainu,
+      cardList.ogroAcogueiro,
+      cardList.ogroMacico,
+      cardList.simioDasNeves,
+      cardList.trollLiberto
+    ]
+
     /* VOIP P2 */
     if (this.game.player === 'p2') {
-      navigator.mediaDevices
-        .getUserMedia({ video: false, audio: true })
-        .then((stream) => {
-          console.log(stream)
-
-          this.game.localConnection = new RTCPeerConnection(
-            this.game.ice_servers
-          )
-
-          stream
-            .getTracks()
-            .forEach((track) =>
-              this.game.localConnection.addTrack(track, stream)
-            )
-
-          this.game.localConnection.onicecandidate = ({ candidate }) => {
-            candidate &&
-              this.game.socket.emit('candidate', this.game.roomNo, candidate)
-          }
-
-          this.game.localConnection.ontrack = ({ streams: [stream] }) => {
-            this.game.audio.srcObject = stream
-          }
-
-          this.game.localConnection
-            .createOffer()
-            .then((offer) =>
-              this.game.localConnection.setLocalDescription(offer)
-            )
-            .then(() => {
-              this.game.socket.emit(
-                'offer',
-                this.game.roomNo,
-                this.game.localConnection.localDescription
-              )
-            })
-
-          this.game.midias = stream
-        })
-        .catch((error) => console.log(error))
+      this.runVoip()
+      this.game.socket.emit('players-ready', this.game.roomNo, x)
     }
 
     this.game.socket.on('offer', (description) => {
@@ -107,25 +224,469 @@ export default class battleMatch extends Phaser.Scene {
 
     /* Adição dos Sprites */
     this.add.sprite(400, 225, 'forest')
+    this.vignette = this.add.sprite(400, 225, 'vignette')
+      .setVisible(false)
+    this.anims.create({
+      key: 'sparkAnim',
+      frames: this.anims.generateFrameNumbers('spark', { start: 0, end: 11 }),
+      frameRate: 20,
+      repeat: -1
+    })
+    /*
+    this.spark = this.add.sprite(400, 225, 'spark')
+      .play('sparkAnim')
+    */
 
-    /* Criação dos Cards */
-    this.card1 = new Card(this, 400, 440, cardList.giganteLorde)
-    this.card2 = new Card(this, 400 * 1.5, 440, cardList.pequenoMago)
-    this.card3 = new Card(this, 400 / 2, 440, cardList.bonecoDeTeste)
+    /* Efeitos de Vignette */
+    this.vignetteFX = this.tweens.addCounter({
+      from: 0.1,
+      to: 1,
+      duration: 1000,
+      yoyo: true,
+      loop: -1,
+      onUpdate: (tween) => {
+        const alpha = tween.getValue()
+        this.vignette.setAlpha(alpha)
+      }
+    })
 
+    this.startChoices()
+    settings.displaySettings(this)
+  }
+
+  runVoip () {
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        console.log(stream)
+
+        this.game.localConnection = new RTCPeerConnection(
+          this.game.ice_servers
+        )
+
+        stream
+          .getTracks()
+          .forEach((track) =>
+            this.game.localConnection.addTrack(track, stream)
+          )
+
+        this.game.localConnection.onicecandidate = ({ candidate }) => {
+          candidate &&
+            this.game.socket.emit('candidate', this.game.roomNo, candidate)
+        }
+
+        this.game.localConnection.ontrack = ({ streams: [stream] }) => {
+          this.game.audio.srcObject = stream
+        }
+
+        this.game.localConnection
+          .createOffer()
+          .then((offer) =>
+            this.game.localConnection.setLocalDescription(offer)
+          )
+          .then(() => {
+            this.game.socket.emit(
+              'offer',
+              this.game.roomNo,
+              this.game.localConnection.localDescription
+            )
+          })
+
+        this.game.midias = stream
+      })
+      .catch((error) => console.log(error))
+  }
+
+  startChoices () {
+    /* Tela de seleção de turnos */
+    this.darkBG = this.add.rectangle(400, 225, 800, 450, 0x000000)
+      .setAlpha(0.5)
+
+    this.p1Sprite = this.add.sprite(70, 370, 'p1')
+    this.p2Sprite = this.add.sprite(730, 370, 'p2')
+
+    this.p1Text = this.add.text(235, 370, 'Jogador 1', this.thinTextFormat).setOrigin(0.5)
+    this.p2Text = this.add.text(565, 370, 'Jogador 2', this.thinTextFormat).setOrigin(0.5)
+
+    const blueTextStr = this.game.player === 'p1' ? 'Você' : 'Sua dupla'
+    const redTextStr = this.game.player === 'p1' ? 'Sua dupla' : 'Você'
+
+    this.blueText = this.add.text(235, 410, blueTextStr, this.thinTextFormat).setOrigin(0.5)
+    this.redText = this.add.text(565, 410, redTextStr, this.thinTextFormat).setOrigin(0.5)
+
+    /* Título da seleção de turnos */
+    this.titleText = this.add.text(400, 70, 'Selecionem seus turnos', this.hugeTextFormat)
+      .setOrigin(0.5)
+
+    /* Ícones interativos */
+    this.turnChoiceSprites = Array(3)
+    this.turnNumberText = Array(3)
+    this.atkChoiceSprites = Array(2)
+    this.defChoiceSprites = Array(2)
+
+    for (let i = 0; i < 3; i++) {
+      this.turnChoiceSprites[i] = this.add.sprite(200 * i + 200, 225, 'frame')
+        .setScale(2)
+
+      this.turnNumberText[i] = this.add.text(200 * i + 200, 225, i + 1, this.hugeTextFormat)
+        .setOrigin(0.5)
+
+      this.atkChoiceSprites[i] = this.add.sprite(200 * i + 200, 150, 'atk')
+        .setScale(2)
+        .setInteractive()
+        .on('pointerdown', () => {
+          const turn = { no: i + 1, isAttacker: true }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, turn)
+        })
+      this.defChoiceSprites[i] = this.add.sprite(200 * i + 200, 300, 'def')
+        .setScale(2)
+        .setInteractive()
+        .on('pointerdown', () => {
+          const turn = { no: i + 1, isAttacker: false }
+          this.game.socket.emit('occupy-turn', this.game.roomNo, this.game.player, turn)
+        })
+    }
+
+    /* NPC ocupa um turno */
+    this.game.socket.on('npc-choice', (choice) => {
+      this.atkChoiceSprites[choice].setVisible(false)
+      this.defChoiceSprites[choice].setVisible(false)
+      this.turnChoiceSprites[choice].setTint(0x9a9a9a)
+      this.turnNumberText[choice].setTint(0xddddaa)
+    })
+
+    /* Atualiza os ícones */
+    this.game.socket.on('notify-turn', (turn) => {
+      const players = [turn.p1, turn.p2]
+      const colors = [0x05059a, 0x9a0505]
+      const playerString = ['p1', 'p2']
+
+      for (let i = 0; i < 3; i++) {
+        this.atkChoiceSprites[i].clearTint().setInteractive()
+        this.defChoiceSprites[i].clearTint().setInteractive()
+      }
+
+      if (players[0].turn.no !== 0 && players[1].turn.no !== 0) {
+        this.confirmButton.clearTint().setInteractive()
+      } else {
+        this.confirmButton.setTint(0x9a9a9a).disableInteractive()
+      }
+
+      for (let i = 0; i < 2; i++) {
+        if (players[i].turn.no !== 0) {
+          if (players[i].turn.isAttacker) {
+            for (let j = 0; j < 3; j++) {
+              this.atkChoiceSprites[j].disableInteractive().setTint(0x9a9a9a)
+            }
+            this.atkChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(colors[i])
+            this.defChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(0x9a9a9a)
+            if (playerString[i] === this.game.player) {
+              this.undoButton.clearTint().setInteractive()
+              this.myRole = players[i].turn.isAttacker ? 'atk' : 'def'
+            }
+          } else {
+            for (let j = 0; j < 3; j++) {
+              this.defChoiceSprites[j].disableInteractive().setTint(0x9a9a9a)
+            }
+            this.defChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(colors[i])
+            this.atkChoiceSprites[players[i].turn.no - 1].disableInteractive().setTint(0x9a9a9a)
+            if (playerString[i] === this.game.player) {
+              this.undoButton.clearTint().setInteractive()
+              this.myRole = players[i].turn.isAttacker ? 'atk' : 'def'
+            }
+          }
+        }
+      }
+    })
+
+    this.game.socket.on('notify-state', (state) => {
+      this.undoButton.setVisible(false)
+    })
+
+    this.confirmButton = this.add.text(400, 380, 'OK', this.thinTextFormat)
+      .setTint(0x9a9a9a)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.confirmButton.clearTint().setTint(0x05f905).disableInteractive()
+        this.game.socket.emit('publish-state', this.game.roomNo, this.game.player)
+      })
+
+    this.undoButton = this.add.sprite(400, 420, 'undo')
+      .setTint(0x9a9a9a)
+      .on('pointerdown', () => {
+        this.game.socket.emit('undo-turn', this.game.roomNo, this.game.player)
+        this.undoButton.setTint(0x9a9a9a).disableInteractive()
+      })
+
+    this.game.socket.on('start-match', (firstTurn, p1Role) => {
+      this.confirmButton.setVisible(false)
+      this.turn = firstTurn
+      this.startMatch()
+    })
+  }
+
+  startMatch () {
+    this.hand = []
+    this.board = []
+    this.boardTexts = []
+    this.enemyBoard = []
+    this.enemyBoardTexts = []
+    this.troupsAttacking = []
+    this.isAttacking = false
+    this.isBeingAttacked = false
+
+    this.ourHP = 20
+    this.oppHP = 20
+    this.myManaCap = 1
+    this.mymana = this.myManaCap
+
+    this.darkBG.setVisible(false)
+    this.titleText.setVisible(false)
+
+    this.p1Text.setVisible(false)
+    this.p2Text.setVisible(false)
+
+    this.blueText.setVisible(false)
+    this.redText.setVisible(false)
+
+    if (this.game.player === 'p1') {
+      this.button = this.add.sprite(720, 225, 'buttonP1')
+        .setInteractive()
+    } else {
+      this.button = this.add.sprite(720, 225, 'buttonP2')
+        .setInteractive()
+    }
+
+    for (let i = 0; i < 3; i++) {
+      this.turnChoiceSprites[i].setVisible(false)
+      this.turnNumberText[i].setVisible(false)
+      this.atkChoiceSprites[i].setVisible(false)
+      this.defChoiceSprites[i].setVisible(false)
+    }
+
+    this.game.socket.on('next-turn', (turn) => {
+      this.turn = turn
+      if (this.game.player === this.turn) {
+        this.myManaCap++
+        this.mymana = this.myManaCap
+        // this.manaText.setText(`Mana:${this.mymana}`)
+        this.drawCard()
+      }
+      this.seeForActions()
+    })
+
+    this.game.socket.on('summon-ally-troup', (card) => {
+      const sideFactor = this.board.length % 2 === 0 ? -1 : 1
+      const spriteX = (Math.ceil(this.board.length / 2) * sideFactor * 130) + 400
+      const atkText = this.add.text(spriteX - 50, 350, card.attack, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0xf9f905)
+      const defText = this.add.text(spriteX + 50, 350, card.health, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0xea0505)
+
+      const sprite = this.add.sprite(spriteX, 300, card.sprite)
+        .on('pointerdown', () => {
+          let clicked
+          if (clicked) {
+            sprite.clearTint()
+            clicked = false
+          } else if (this.isAttacking) { sprite.setTint(0x9a0505) }
+        })
+      this.equalizeScale(sprite)
+
+      this.boardTexts.push([atkText, defText])
+      this.board.push(sprite)
+
+      this.children.bringToTop(this.button)
+      this.children.bringToTop(this.buttonText)
+      for (let i = 0; i < this.hand.length; i++) {
+        this.children.bringToTop(this.hand[i])
+      }
+      this.children.bringToTop(this.ourHpText)
+      this.children.bringToTop(this.oppHP)
+      this.seeForActions()
+    })
+
+    this.game.socket.on('npc-play', (card) => {
+      const sideFactor = this.enemyBoard.length % 2 === 0 ? -1 : 1
+      const spriteX = (Math.ceil(this.enemyBoard.length / 2) * sideFactor * 130) + 400
+
+      const sprite = this.add.sprite(spriteX, 70, card.path)
+      const atkText = this.add.text(spriteX - 50, 90, card.attack, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0xba0000)
+      const defText = this.add.text(spriteX + 50, 90, card.health, this.thinTextFormat)
+        .setOrigin(0.5)
+        .setTint(0x05ba05)
+      this.equalizeScale(sprite)
+      this.enemyBoard.push(sprite)
+      this.enemyBoardTexts.push([atkText, defText])
+      this.children.bringToTop(this.p1Sprite)
+      this.children.bringToTop(this.p2Sprite)
+      this.children.bringToTop(this.button)
+      this.children.bringToTop(this.buttonText)
+      for (let i = 0; i < this.hand.length; i++) {
+        this.children.bringToTop(this.hand[i])
+      }
+    })
+
+    this.game.socket.on('npc-attack', (card) => {
+      this.isBeingAttacked = true
+      this.seeForActions()
+    })
+
+    this.game.socket.on('npc-block', (card) => {
+      this.isAttacking = false
+      this.seeForActions()
+    })
+
+    this.game.socket.on('notify-npc-health', (hp) => {
+      this.oppHP = hp
+      this.oppHpText.setText(`HP:${this.oppHP}`)
+    })
+
+    this.game.socket.on('win', () => {
+      this.win()
+    })
+
+    this.game.socket.on('defeat', () => {
+      this.defeat()
+    })
+
+    /* Arrastar carta */
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX
       gameObject.y = dragY - 70
-      if (gameObject.y < 300) {
+      if (gameObject.y < 300 && this.turn === this.game.player) {
+        this.vignette.setVisible(true)
         gameObject.bgEffect.setVisible(true)
       } else {
+        this.vignette.setVisible(false)
         gameObject.bgEffect.setVisible(false)
       }
     })
 
-    settings.displaySettings(this)
+    /* Criação dos Cards */
+    for (let i = 0; i < 3; i++) {
+      this.drawCard()
+    }
+
+    this.buttonText = this.add.text(720, 225, '', this.buttonTextFormat)
+    this.ourHpText = this.add.text(10, 10, `HP:${this.ourHP}`, this.hugeTextFormat).setTint(0x9a0505)
+    this.oppHpText = this.add.text(10, 200, `HP:${this.oppHP}`, this.hugeTextFormat)
+    // this.manaText = this.add.text(10, 230, `Mana:${this.myManaCap}`, this.hugeTextFormat)
+
+    this.seeForActions()
   }
 
-  update (time, delta) {
+  seeForActions () {
+    if (this.turn !== this.game.player) {
+      this.buttonText.setText('Aguarde').setOrigin(0.5)
+      this.button.setTint(0x9a9a9a).disableInteractive()
+    } else {
+      this.button.clearTint().setInteractive()
+      if (this.myRole === 'atk' && !this.isAttacking && this.board.length > 0) {
+        this.buttonText.setText('Atacar').setOrigin(0.5)
+        this.button.on('pointerdown', () => {
+          this.isAttacking = true
+          this.button.disableInteractive()
+          this.time.delayedCall(2000, () => {
+            this.button.setInteractive()
+          })
+          this.buttonText.setText('Confirmar').setOrigin(0.5)
+          this.button.on('pointerdown', () => {
+            this.game.socket.emit('player-attack', this.game.roomNo, this.troupsAttacking)
+          })
+          for (let i = 0; i < this.board.length; i++) {
+            this.board[i].setInteractive()
+          }
+        })
+      } else {
+        this.buttonText.setText('Passar').setOrigin(0.5)
+        this.button.on('pointerdown', () => {
+          this.game.socket.emit('pass-turn', this.game.roomNo)
+          this.button.clearTint().disableInteractive()
+          this.buttonText.setText('Aguarde').setOrigin(0.5)
+          this.isAttacking = false
+        })
+      }
+    }
   }
+
+  playCard (cardInfo, card) {
+    if (this.board.length > 4) {
+      const fullBoardText = this.add.text(400, 225, 'Limite atingido', this.hugeTextFormat)
+        .setOrigin(0.5)
+      this.time.delayedCall(2000, () => {
+        fullBoardText.destroy()
+      })
+    } else if (this.turn === this.game.player) {
+      this.game.socket.emit('play-card', this.game.roomNo, cardInfo)
+      card.setVisible(false)
+    } else if (this.isBeingAttacked) {
+      const text = this.add.text(400, 225, 'Não durante um ataque', this.hugeTextFormat)
+        .setOrigin(0.5)
+      this.time.delayedCall(2000, () => {
+        text.destroy()
+      })
+    } else {
+      const text = this.add.text(400, 225, 'Não é sua vez', this.hugeTextFormat)
+        .setOrigin(0.5)
+      this.time.delayedCall(2000, () => {
+        text.destroy()
+      })
+    }
+  }
+
+  drawCard () {
+    if (this.hand.length > 5) { return }
+    const rng = Math.floor(Math.random() * this.myDeck.length)
+    const sideFactor = this.hand.length % 2 === 0 ? -1 : 1
+    const cardX = (Math.ceil(this.hand.length / 2) * sideFactor * 130) + 400
+    this.hand.push(new Card(this, cardX, 440, this.myDeck[rng]))
+  }
+
+  equalizeScale (spriteImg) {
+    const imageSize = spriteImg.width * spriteImg.height
+    const targetSize = 128 * 128
+
+    const scale = Math.sqrt(targetSize / imageSize)
+    spriteImg.setScale(scale)
+  }
+
+  defeat () {
+    this.sound.stopByKey('battleST')
+    this.defeatST.play()
+
+    this.darkBG.setVisible(true)
+    this.add.text(400, 225, 'Derrota', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setTint(0x9a0505)
+    this.add.text(400, 300, '- Voltar ao Menu -', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.scene.start('mainMenu')
+      })
+  }
+
+  win () {
+    this.sound.stopByKey('battleST')
+    this.winST.play()
+
+    this.darkBG.setVisible(true)
+    this.add.text(400, 225, 'Vitória!', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setTint(0x9a0505)
+    this.add.text(400, 300, '- Continuar -', this.hugeTextFormat)
+      .setOrigin(0.5)
+      .setInteractive()
+      .on('pointerdown', () => {
+        this.scene.start('mainMenu')
+      })
+  }
+
+  update (time, delta) { }
 }
